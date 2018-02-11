@@ -1,0 +1,346 @@
+= Groovy Integration Testing with Spock and Docker
+Kevin Wittek <https://github.com/kiview[icon:github[] @kiview]>
+
+++++
+<a href="https://github.com/kiview/testcontainers-groovy-integration-tests-workshop"><img style="position: fixed; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
+++++
+
+== Getting started
+
+To complete this workshop, you should have installed locally:
+
+* JDK 8
+* GIT
+* Docker 17-CE
+* Linux environment recommended
+** Using _Docker for Windows_ and _Docker for Mac_ should work as well, but we might struggle in helping with problems on these systems ;)
+
+Generals experience in using the following technologies is expected. You can tag along if you don't
+know all the details, but some topics might get too complex if you are missing the basics.
+
+* Java
+* Groovy
+* Grails
+* Gradle
+* Spock
+* Docker
+
+Also, although not mandatory, it's highly recommended to use https://www.jetbrains.com/idea/[IntelliJ IDEA], arguably
+the best IDE for Groovy and Grails development. You can just use the Community Edition if you want to.
+
+=== Grails Quickstart
+
+The easiest way to install Grails (and many other JVM tools) is to use http://sdkman.io/[SDKMAN]
+
+[source, bash]
+----
+curl -s "https://get.sdkman.io" | bash
+----
+
+Restart your terminal and install Grails:
+
+[source, bash]
+----
+sdk install grails
+----
+
+Check that everything works by typing `grails -version`
+
+[source, bash]
+----
+| Grails Version: 3.2.9
+| Groovy Version: 2.4.10
+| JVM Version: 1.8.0_131
+----
+
+
+Let's start by creating a new and empty Grails application:
+[source, bash]
+----
+grails create-app testcontainers-workshop
+cd testcontainers-workshop
+----
+
+You can import the generated project into Intellij using `File -> New -> Project from existing sources...` and select the
+`build.gradle` file inside the directory.
+
+[TIP]
+====
+You can also head over to http://start.grails.org/[Grails Application Forge] and download a ready to use
+Grails project and use the Gradle-Wrapper and circumvent install Gradle altogether.
+====
+
+=== TestContainers Quickstart
+
+____
+https://github.com/testcontainers/testcontainers-java[TestContainers] is a Java 8 library that supports JUnit tests, providing lightweight, throwaway instances of common databases, Selenium web browsers, or anything else that can run in a Docker container.
+____
+
+There also exists a special https://github.com/testcontainers/testcontainers-spock[TestContainers-Spock-Extension] which
+we'll use in this workshop.
+
+Since the most recent snapshot versions are available at https://jitpack.io/[jitpack.io], you can
+include the dependency in your `build.gradle` file like this:
+
+[source, groovy]
+----
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    testCompile 'com.github.testcontainers:testcontainers-spock:87299c10e8'
+}
+----
+
+==== @Testcontainers class-annotation
+Specifying the @Testcontainers annotation will instruct Spock to start and stop all
+TestContainers accordingly. This annotation can be mixed with Spock's @Shared annotation to indicate, that containers shouldn't be restarted between tests.
+
+[source, groovy]
+----
+@Testcontainers
+class DatabaseTest extends Specification {
+
+    @Shared
+    PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer()
+            .withDatabaseName("foo")
+            .withUsername("foo")
+            .withPassword("secret")
+
+    def "database is accessible"() {
+
+        given: "a jdbc connection"
+        HikariConfig hikariConfig = new HikariConfig()
+        hikariConfig.setJdbcUrl(postgreSQLContainer.jdbcUrl)
+        hikariConfig.setUsername("foo")
+        hikariConfig.setPassword("secret")
+        HikariDataSource ds = new HikariDataSource(hikariConfig)
+
+        when: "querying the database"
+        Statement statement = ds.getConnection().createStatement()
+        statement.execute("SELECT 1")
+        ResultSet resultSet = statement.getResultSet()
+        resultSet.next()
+
+        then: "result is returned"
+        int resultSetInt = resultSet.getInt(1)
+        resultSetInt == 1
+    }
+}
+----
+
+== Integration testing using a real database
+
+A classic use case for integration testing is the persistence layer. Grails default approach uses an embedded H2 in-memory database
+and runs each test inside its own database transaction, which is rolled back after each test method.
+This might work for a lot use case, but sometimes it's beneficial to use a real database for the integration tests, which
+will provide you with the extra level of confidence regarding vendor specific SQL features or more complex queries.
+
+TestContainers provides out of the box support for the following databases:
+
+* MySQL
+* PostgreSQL
+* Oracle XE
+* Virtuoso
+
+We'll use PostgreSQL in the following example, so we need to include an additional dependency in our `build.gradle` file:
+
+[source, groovy]
+----
+// https://mvnrepository.com/artifact/org.testcontainers/postgresql
+testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.2.1'
+----
+
+=== TestContainers JDBC-URL
+
+As long as you have TestContainers and the appropriate JDBC driver on your classpath, you can simply modify regular JDBC
+connection URLs to get a fresh containerized instance of the database each time your application starts up (meaning
+on initialization of the JDBC connection pool).
+
+[CAUTION]
+=====
+Attention when using Spring-Boot (or Grails for that matter). In this case you have to specify the following JDBC driver:
+
+`spring.datasource.driver-class-name=org.testcontainers.jdbc.ContainerDatabaseDriver`
+
+which would translate to something like this for Grails:
+
+----
+dataSource:
+  dbCreate: create
+  url: jdbc:tc:postgresql://hostname/databasename
+  driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
+----
+
+=====
+
+==== MySQL
+
+----
+jdbc:tc:mysql://somehostname:someport/databasename
+----
+
+----
+jdbc:tc:mysql:5.6.23://somehostname:someport/databasename
+----
+
+==== PostgreSQL
+
+----
+jdbc:tc:postgresql://hostname/databasename
+----
+
+
+=== Configure SUT at runtime using System Properties
+
+We want our tests to be as portable as possible and so one shouldn't make assumptions regarding the environment they are
+running in (like i.e. free ports). Luckily TestContainers will already do all the heavy lifting for you and start
+the database on a free port (by leveraging the underlying container technology). By using methods like `postgreSQLContainer.getJdbcUrl()`
+it's possible to get the concrete values a runtime.
+
+One way to override the Grails configuration values is to use JVM system properties:
+
+[source, groovy]
+----
+System.setProperty("dataSource.url", postgreSQLContainer.jdbcUrl)
+System.setProperty("dataSource.username", postgreSQLContainer.username)
+System.setProperty("dataSource.password", postgreSQLContainer.password)
+System.setProperty("dataSource.driverClassName", "org.postgresql.Driver")
+----
+
+It might also be a sensible thing to cleanup afterwards, so we don't pollute our JVM environment:
+
+[source, groovy]
+----
+System.clearProperty("dataSource.url")
+----
+
+We also need to refresh the `ApplicationContext`, so `@DirtiesContext` comes in handy:
+
+[source, groovy]
+----
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+class BookSpec extends Specification {
+  ...
+}
+----
+
+[NOTE]
+====
+Could you inject these configuration values in a way that's more idiomatic to Grails?
+Spring-Boot allows the usage of `ApplicationContextInitializer`, but I wasn't able to get this working
+in conjunction with Grails' `@Integration` AST transformation. I'd be happy to receive suggestions from the Grails
+gurus ;)
+====
+
+=== Exercise
+
+Create a simple domain class
+
+----
+grails> create-domain-class Book
+----
+
+and a corresponding integration test
+
+----
+grails> create-integration-test BookInt
+----
+
+Now write a simple integration test (using the `@Testcontainers` annotation and the System properties based configuration)
+which will verify, that persisting a `Book` works. At which point in the test
+lifecycle would you set the configuration values? Also ensure that you aren't
+using Grails' default H2 database in your integration test ;)
+
+As a bonus exercise, try to write the same test using the specialized TestContainers
+JDBC-URL.
+
+[TIP]
+====
+You might need additional runtime dependencies! You'll also notice scary error messages in red when the database container
+is starting. These do occur because TestContainers will try to connect to the starting database using the PostgreSQL JDBC
+driver in order to determine if the database is ready to interact with. These error logs will not appear anymore in the
+next TestContainers release.
+
+Also think about flushing the Hibernate Session when writing the test.
+====
+
+
+== Interact with an external HTTP-Server
+
+Now we want to think about testing the integration with a real external application. This could be anything
+which we'd be able to run inside a container, but in order to keep things simple, we have a very basic example:
+Downloading a file from an HTTP-Server.
+
+Let's start with a Grails service class skeleton, which looks like this:
+
+[source, groovy]
+----
+class HttpDownloaderService {
+
+    @Value('${http.ip}')
+    String serverIp
+
+    @Value('${http.port}')
+    String serverPort
+
+    String downloadFile(String path) {
+        ...
+    }
+}
+----
+
+
+=== Generic Container
+
+For this integration test we want to use an Apache webserver. Fortunately there is a ready to use Docker image: `httpd:alpine`
+
+TestContainers provides a generic API for Docker images called `GenericContainer`. We also need to tell TestContainers which port
+we want the container to expose and as before, TestContainers will find use a free port on our host system and setup up
+the appropriate mapping.
+
+We might also want to have some specific files on the server we can use for our tests and TestContainers will allow us
+to mount files on the classpath into the container:
+
+[source, groovy]
+----
+GenericContainer httpContainer = new GenericContainer("httpd:alpine")
+            .withExposedPorts(80)
+            .withClasspathResourceMapping("foo.txt", "/usr/local/apache2/htdocs/foo.txt", BindMode.READ_ONLY)
+----
+
+The `GenericContainer` interface also provides the methods to retrieve the actual container ip and port at runtime:
+
+[source, groovy]
+----
+httpContainer.getContainerIpAddress()
+httpContainer.getMappedPort(80)
+----
+
+=== Exercise
+
+Write an integration test as well as the corresponding production code to make the test green. You might want to use
+the wonderful new https://github.com/http-builder-ng/http-builder-ng[HttpBuilder-NG] for the implementation code:
+
+[source, groovy]
+----
+compile 'io.github.http-builder-ng:http-builder-ng-core:0.16.1'
+----
+
+Like before, think about how to actually inject the configuration properties into your Grails application context.
+
+== Functional testing using Geb and Selenium
+
+I've prepared an example, we might want to look into:
+
+[source, bash]
+----
+git clone https://github.com/kiview/example-voting-app.git
+----
+
+== Acknowledgements
+
+* https://github.com/alvarosanchez[Álvaro Sánchez-Mariscal] and https://github.com/musketyr[Vladimir Orany] for giving me a
+kickstart using AsciiDoc for this workshop
