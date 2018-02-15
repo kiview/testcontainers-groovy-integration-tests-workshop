@@ -75,11 +75,11 @@ public static GenericContainer alpine =
                "while true; do echo \"$MAGIC_NUMBER\" | nc -l -p 80; done");
 ----
 
-`GenericContainer` is a special Testcontainers class and can be used for every Docker image, for which no specialized Testcontainers implementation exists. Existing specialized container classes are i.e. `PostgreSQLContainer`, `MySQLContainer` or `BrowserWebDriverContainer`. These specialized containers might provide additinal API methods for more convenient usage inside tests, like `getJdbcUrl()` in case of database containers.
+`GenericContainer` is a special Testcontainers class and can be used for every Docker image, for which no specialized Testcontainers implementation exists. Existing specialized container classes are i.e. `PostgreSQLContainer`, `MySQLContainer` or `BrowserWebDriverContainer`. These specialized containers might provide additional API methods for more convenient usage inside tests, like `getJdbcUrl()` in case of database containers.
 
 == Integration testing using a real database
 
-A classic use case for integration testing is the persistence layer. An ofen found default approach is to use an embedded H2 in-memory database and run each test inside its own database transaction, which is rolled back after each test method.
+A classic use case for integration testing is the persistence layer. An often found default approach is to use an embedded H2 in-memory database and run each test inside its own database transaction, which is rolled back after each test method.
 This might work for a lot use case, but sometimes it's beneficial to use a real database for the integration tests, which
 will provide you with the extra level of confidence regarding vendor specific SQL features or more complex queries.
 
@@ -113,9 +113,9 @@ Write integration tests for each method of `BookRepository` and implement `BookR
 ====
 You might need additional runtime dependencies!
 
-For the production code it's okay to go completly vanilla Java and use `DriverManager` and https://docs.oracle.com/javase/tutorial/jdbc/basics/connecting.html[`Connection`]. You can use `DriverManager.getConnection(jdbcUrl, username, password)` and `c.createStatement()`.
+For the production code, it's okay to go completely vanilla Java and use `DriverManager` and https://docs.oracle.com/javase/tutorial/jdbc/basics/connecting.html[`Connection`]. You can use `DriverManager.getConnection(jdbcUrl, username, password)` and `c.createStatement()`.
 
-Also remember to initialize the database schema before the test. Future versions of Testcontainers will prodive special API methods for helping with this (see https://github.com/testcontainers/testcontainers-java/pull/575[PR]), but for now you have to do it manually or use https://flywaydb.org/[Flyway] if you want to.
+Also remember to initialize the database schema before the test. Future versions of Testcontainers will provide special API methods for helping with this (see https://github.com/testcontainers/testcontainers-java/pull/575[PR]), but for now you have to do it manually or use https://flywaydb.org/[Flyway] if you want to.
 ====
 
 === TestContainers JDBC-URL
@@ -126,7 +126,7 @@ on initialization of the JDBC connection pool). This can be used as an alternati
 
 [CAUTION]
 =====
-Attention when using Spring-Boot (or Grails for that matter). In this case you have to specify the following JDBC driver:
+Attention when using Spring-Boot (or Grails for that matter). In this case, you have to specify the following JDBC driver:
 
 `spring.datasource.driver-class-name=org.testcontainers.jdbc.ContainerDatabaseDriver`
 
@@ -160,7 +160,7 @@ jdbc:tc:postgresql://hostname/databasename
 === Exercise 2
 
 Duplicate the test class you've written in the last exercise and use the special Testcontainers JDBC-URL this time. 
-The JDBC-URL approach already supports using an database https://www.testcontainers.org/usage/database_containers.html#using-an-init-script[init script].
+The JDBC-URL approach already supports using a database https://www.testcontainers.org/usage/database_containers.html#using-an-init-script[init script].
 
 == Excursus: Groovy & Spock
 
@@ -195,7 +195,7 @@ public class HttpDownloaderService {
 
 === Generic Container
 
-For this integration test we want to use an Apache webserver. Fortunately there is a ready to use Docker image: `httpd:alpine`
+For this integration test, we want to use an Apache web server. Fortunately, there is a ready to use Docker image: `httpd:alpine`
 
 Testcontainers provides a generic API for Docker images called `GenericContainer`. We also need to tell Testcontainers which port
 we want the container to expose and as before, Testcontainers will find use a free port on our host system and setup up
@@ -211,7 +211,7 @@ GenericContainer httpContainer = new GenericContainer("httpd:alpine")
             .withClasspathResourceMapping("foo.txt", "/usr/local/apache2/htdocs/foo.txt", BindMode.READ_ONLY);
 ----
 
-The `GenericContainer` interface also provides the methods to retrieve the actual container ip and port at runtime:
+The `GenericContainer` interface also provides the methods to retrieve the actual container IP and port at runtime:
 
 [source, java]
 ----
