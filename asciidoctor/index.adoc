@@ -25,6 +25,17 @@ know all the details, but some topics might get too complex if you are missing t
 Also, although not mandatory, it's highly recommended to use https://www.jetbrains.com/idea/[IntelliJ IDEA], arguably
 the best IDE for Java and JVM language development. You can just use the Community Edition if you want to (which will miss Groovy support).
 
+=== Getting the example project
+
+Checkout the project from Github and run a quick Gradle build in order to check if everything works (the test is expected to fail :wink:)
+
+[source, bash]
+----
+git clone git@github.com:kiview/testcontainers-groovy-integration-tests-workshop-workspace.git
+cd testcontainers-groovy-integration-tests-workshop-workspace
+./gradlew build
+----
+
 === Testcontainers Quickstart
 
 ____
