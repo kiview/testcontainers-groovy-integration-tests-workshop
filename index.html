@@ -661,7 +661,7 @@ dependencies {
 </div>
 </div>
 <div class="paragraph">
-<p><code>GenericContainer</code> is a special Testcontainers class and can be used for every Docker image, for which no specialized Testcontainers implementation exists. Existing specialized container classes are i.e. <code>PostgreSQLContainer</code>, <code>MySQLContainer</code> or <code>BrowserWebDriverContainer</code>. These specialized containers might provide additinal API methods for more convenient usage inside tests, like <code>getJdbcUrl()</code> in case of database containers.</p>
+<p><code>GenericContainer</code> is a special Testcontainers class and can be used for every Docker image, for which no specialized Testcontainers implementation exists. Existing specialized container classes are i.e. <code>PostgreSQLContainer</code>, <code>MySQLContainer</code> or <code>BrowserWebDriverContainer</code>. These specialized containers might provide additional API methods for more convenient usage inside tests, like <code>getJdbcUrl()</code> in case of database containers.</p>
 </div>
 </div>
 </div>
@@ -671,7 +671,7 @@ dependencies {
 <h2 id="_integration_testing_using_a_real_database">Integration testing using a real database</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>A classic use case for integration testing is the persistence layer. An ofen found default approach is to use an embedded H2 in-memory database and run each test inside its own database transaction, which is rolled back after each test method.
+<p>A classic use case for integration testing is the persistence layer. An often found default approach is to use an embedded H2 in-memory database and run each test inside its own database transaction, which is rolled back after each test method.
 This might work for a lot use case, but sometimes it&#8217;s beneficial to use a real database for the integration tests, which
 will provide you with the extra level of confidence regarding vendor specific SQL features or more complex queries.</p>
 </div>
@@ -728,10 +728,10 @@ it&#8217;s possible to get the concrete values a runtime. Of course, production 
 <p>You might need additional runtime dependencies!</p>
 </div>
 <div class="paragraph">
-<p>For the production code it&#8217;s okay to go completly vanilla Java and use <code>DriverManager</code> and <a href="https://docs.oracle.com/javase/tutorial/jdbc/basics/connecting.html"><code>Connection</code></a>. You can use <code>DriverManager.getConnection(jdbcUrl, username, password)</code> and <code>c.createStatement()</code>.</p>
+<p>For the production code, it&#8217;s okay to go completely vanilla Java and use <code>DriverManager</code> and <a href="https://docs.oracle.com/javase/tutorial/jdbc/basics/connecting.html"><code>Connection</code></a>. You can use <code>DriverManager.getConnection(jdbcUrl, username, password)</code> and <code>c.createStatement()</code>.</p>
 </div>
 <div class="paragraph">
-<p>Also remember to initialize the database schema before the test. Future versions of Testcontainers will prodive special API methods for helping with this (see <a href="https://github.com/testcontainers/testcontainers-java/pull/575">PR</a>), but for now you have to do it manually or use <a href="https://flywaydb.org/">Flyway</a> if you want to.</p>
+<p>Also remember to initialize the database schema before the test. Future versions of Testcontainers will provide special API methods for helping with this (see <a href="https://github.com/testcontainers/testcontainers-java/pull/575">PR</a>), but for now you have to do it manually or use <a href="https://flywaydb.org/">Flyway</a> if you want to.</p>
 </div>
 </td>
 </tr>
@@ -753,7 +753,7 @@ on initialization of the JDBC connection pool). This can be used as an alternati
 </td>
 <td class="content">
 <div class="paragraph">
-<p>Attention when using Spring-Boot (or Grails for that matter). In this case you have to specify the following JDBC driver:</p>
+<p>Attention when using Spring-Boot (or Grails for that matter). In this case, you have to specify the following JDBC driver:</p>
 </div>
 <div class="paragraph">
 <p><code>spring.datasource.driver-class-name=org.testcontainers.jdbc.ContainerDatabaseDriver</code></p>
@@ -799,7 +799,7 @@ on initialization of the JDBC connection pool). This can be used as an alternati
 <h3 id="_exercise_2">Exercise 2</h3>
 <div class="paragraph">
 <p>Duplicate the test class you&#8217;ve written in the last exercise and use the special Testcontainers JDBC-URL this time.
-The JDBC-URL approach already supports using an database <a href="https://www.testcontainers.org/usage/database_containers.html#using-an-init-script">init script</a>.</p>
+The JDBC-URL approach already supports using a database <a href="https://www.testcontainers.org/usage/database_containers.html#using-an-init-script">init script</a>.</p>
 </div>
 </div>
 </div>
@@ -844,7 +844,7 @@ Downloading a file from an HTTP-Server.</p>
 <div class="sect2">
 <h3 id="_generic_container">Generic Container</h3>
 <div class="paragraph">
-<p>For this integration test we want to use an Apache webserver. Fortunately there is a ready to use Docker image: <code>httpd:alpine</code></p>
+<p>For this integration test, we want to use an Apache web server. Fortunately, there is a ready to use Docker image: <code>httpd:alpine</code></p>
 </div>
 <div class="paragraph">
 <p>Testcontainers provides a generic API for Docker images called <code>GenericContainer</code>. We also need to tell Testcontainers which port
@@ -863,7 +863,7 @@ to mount files on the classpath into the container:</p>
 </div>
 </div>
 <div class="paragraph">
-<p>The <code>GenericContainer</code> interface also provides the methods to retrieve the actual container ip and port at runtime:</p>
+<p>The <code>GenericContainer</code> interface also provides the methods to retrieve the actual container IP and port at runtime:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -926,7 +926,7 @@ kickstart using AsciiDoc for this workshop</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-02-15 20:54:23 +01:00
+Last updated 2018-02-15 21:26:41 +01:00
 </div>
 </div>
 </body>
