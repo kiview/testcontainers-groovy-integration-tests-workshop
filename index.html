@@ -534,7 +534,11 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#_exercise_2">Exercise 2</a></li>
 </ul>
 </li>
-<li><a href="#_excursus_groovy_spock">Excursus: Groovy &amp; Spock</a></li>
+<li><a href="#_excursus_groovy_spock">Excursus: Groovy &amp; Spock</a>
+<ul class="sectlevel2">
+<li><a href="#_exercise_2_5">Exercise 2.5</a></li>
+</ul>
+</li>
 <li><a href="#_interact_with_an_external_http_server">Interact with an external HTTP-Server</a>
 <ul class="sectlevel2">
 <li><a href="#_generic_container">Generic Container</a></li>
@@ -822,7 +826,78 @@ The JDBC-URL approach already supports using a database <a href="https://www.tes
 <h2 id="_excursus_groovy_spock">Excursus: Groovy &amp; Spock</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>TODO</p>
+<p>In exercise 1 and 2 we used JUnit to write the test that describe our systems behaviour.
+As the workshop&#8217;s name might have suggested, we now want to use <a href="http://groovy-lang.org/">Groovy</a> and it&#8217;s most formidable testing framework <a href="http://spockframework.org/">Spock</a> to do that in a much more expressive and readable way.
+We then add in the <a href="https://github.com/testcontainers/testcontainers-spock">Testcontainers Spock extension</a> to make things even easier.</p>
+</div>
+<div class="paragraph">
+<p>For Groovy and Spock, it suffices to pull in the dependency on Spock - Groovy will be pulled in transitively:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">testCompile <span class="key">group</span>: <span class="string"><span class="delimiter">'</span><span class="content">org.spockframework</span><span class="delimiter">'</span></span>, <span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">spock-core</span><span class="delimiter">'</span></span>, <span class="key">version</span>: <span class="string"><span class="delimiter">'</span><span class="content">1.1-groovy-2.4</span><span class="delimiter">'</span></span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>As an aside: Groovy is nothing new to any of you by now - in fact, the entire <code>build.gradle</code> file is valid Groovy!</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>For the Spock extension for Testcontainers, grab the release off the jitpack repository:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">repositories {
+    mavenCentral()
+    maven { url <span class="string"><span class="delimiter">'</span><span class="content">https://jitpack.io</span><span class="delimiter">'</span></span> }
+}
+
+dependencies {
+    testCompile <span class="string"><span class="delimiter">'</span><span class="content">com.github.testcontainers:testcontainers-spock:1.0.0-tc1.6.0</span><span class="delimiter">'</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To give you a boost, all necessary dependencies are already declared in your <code>build.gradle</code>.</p>
+</div>
+<div class="sect2">
+<h3 id="_exercise_2_5">Exercise 2.5</h3>
+<div class="paragraph">
+<p>You can get your feet wet by porting your test from exercise 2 to Groovy and Spock.
+Take a look at the <a href="http://spockframework.org/spock/docs/1.1/spock_primer.html">Spock primer</a> to get the Specification skeleton right!</p>
+</div>
+<div class="paragraph">
+<p>Note that we don&#8217;t need to add the <code>@ClassRule</code> annotation to our containers anymore. The <code>testcontainers-spock</code> extension does a great job taking this off our hands, just make sure your Specification is annotated <code>@Testcontainers</code>.
+The optional <code>static</code> modifier is replaced by annotating <code>@Shared</code>, making our container persistent across all test methods:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Testcontainers</span>
+<span class="type">class</span> <span class="class">RedisTest</span> <span class="directive">extends</span> Specification {
+
+    <span class="annotation">@Shared</span>
+    <span class="directive">public</span> GenericContainer redis =
+        <span class="keyword">new</span> GenericContainer(<span class="string"><span class="delimiter">&quot;</span><span class="content">redis:3.0.2</span><span class="delimiter">&quot;</span></span>)
+                .withExposedPorts(<span class="integer">6379</span>);
+
+    <span class="comment">// ...</span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once your rewritten tests are working and lighting up green in your IDE, take a look at Spock&#8217;s <a href="http://spockframework.org/spock/docs/1.1/data_driven_testing.html">Data Driven Testing</a> feature.
+Choose a test of your suite and extend it by using the <code>where:</code> block!</p>
+</div>
 </div>
 </div>
 </div>
@@ -940,7 +1015,7 @@ kickstart using AsciiDoc for this workshop</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-02-15 21:41:15 +01:00
+Last updated 2018-02-16 21:09:17 +01:00
 </div>
 </div>
 </body>
