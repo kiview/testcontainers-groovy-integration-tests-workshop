@@ -186,6 +186,11 @@ For Groovy and Spock, it suffices to pull in the dependency on Spock - Groovy wi
 testCompile group: 'org.spockframework', name: 'spock-core', version: '1.1-groovy-2.4'
 ----
 
+[NOTE]
+=====
+As an aside: Groovy is nothing new to any of you by now - in fact, the entire `build.gradle` file is valid Groovy!
+=====
+
 For the Spock extension for Testcontainers, grab the release off the jitpack repository:
 [source, groovy]
 ----
@@ -201,7 +206,8 @@ dependencies {
 
 To give you a boost, all necessary dependencies are already declared in your `build.gradle`. 
 
-If you want, you can get your feet wet by porting your test from exercise 2 to Groovy and Spock. 
+=== Exercise 2.5
+You can get your feet wet by porting your test from exercise 2 to Groovy and Spock. 
 Take a look at the http://spockframework.org/spock/docs/1.1/spock_primer.html[Spock primer] to get the Specification skeleton right!
 
 Note that we don't need to add the `@ClassRule` annotation to our containers anymore. The `testcontainers-spock` extension does a great job taking this off our hands, just make sure your Specification is annotated `@Testcontainers`. 
@@ -209,19 +215,19 @@ The optional `static` modifier is replaced by annotating `@Shared`, making our c
 [source, groovy]
 ----
 @Testcontainers
-class DatabaseTest extends Specification {
+class RedisTest extends Specification {
 
     @Shared
     public GenericContainer redis =
         new GenericContainer("redis:3.0.2")
                 .withExposedPorts(6379);
 
+    // ...
+}
 ----
 
-
-=====
-As an aside: Groovy is nothing new to any of you by now - in fact, the entire `build.gradle` file is valid Groovy!
-=====
+Once your rewritten tests are working and lighting up green in your IDE, take a look at Spock's http://spockframework.org/spock/docs/1.1/data_driven_testing.html[Data Driven Testing] feature. 
+Choose a test of your suite and extend it by using the `where:` block!
 
 == Interact with an external HTTP-Server
 
