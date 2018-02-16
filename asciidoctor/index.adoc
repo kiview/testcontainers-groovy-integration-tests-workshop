@@ -175,7 +175,59 @@ The JDBC-URL approach already supports using a database https://www.testcontaine
 
 == Excursus: Groovy & Spock
 
-TODO
+In exercise 1 and 2 we used JUnit to write the test that describe our systems behaviour. 
+As the workshop's name might have suggested, we now want to use http://groovy-lang.org/[Groovy] and it's most formidable testing framework http://spockframework.org/[Spock] to do that in a much more expressive and readable way.
+We then add in the https://github.com/testcontainers/testcontainers-spock[Testcontainers Spock extension] to make things even easier.
+
+For Groovy and Spock, it suffices to pull in the dependency on Spock - Groovy will be pulled in transitively:
+
+[source, groovy]
+----
+testCompile group: 'org.spockframework', name: 'spock-core', version: '1.1-groovy-2.4'
+----
+
+[NOTE]
+=====
+As an aside: Groovy is nothing new to any of you by now - in fact, the entire `build.gradle` file is valid Groovy!
+=====
+
+For the Spock extension for Testcontainers, grab the release off the jitpack repository:
+[source, groovy]
+----
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    testCompile 'com.github.testcontainers:testcontainers-spock:1.0.0-tc1.6.0'
+}
+----
+
+To give you a boost, all necessary dependencies are already declared in your `build.gradle`. 
+
+=== Exercise 2.5
+You can get your feet wet by porting your test from exercise 2 to Groovy and Spock. 
+Take a look at the http://spockframework.org/spock/docs/1.1/spock_primer.html[Spock primer] to get the Specification skeleton right!
+
+Note that we don't need to add the `@ClassRule` annotation to our containers anymore. The `testcontainers-spock` extension does a great job taking this off our hands, just make sure your Specification is annotated `@Testcontainers`. 
+The optional `static` modifier is replaced by annotating `@Shared`, making our container persistent across all test methods:
+[source, groovy]
+----
+@Testcontainers
+class RedisTest extends Specification {
+
+    @Shared
+    public GenericContainer redis =
+        new GenericContainer("redis:3.0.2")
+                .withExposedPorts(6379);
+
+    // ...
+}
+----
+
+Once your rewritten tests are working and lighting up green in your IDE, take a look at Spock's http://spockframework.org/spock/docs/1.1/data_driven_testing.html[Data Driven Testing] feature. 
+Choose a test of your suite and extend it by using the `where:` block!
 
 == Interact with an external HTTP-Server
 
