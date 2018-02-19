@@ -292,6 +292,8 @@ the wonderful new https://github.com/http-builder-ng/http-builder-ng[HttpBuilder
 compile 'io.github.http-builder-ng:http-builder-ng-core:0.16.1'
 ----
 
+(As an alternative solution, you can also check out the Groovy enhanced http://mrhaki.blogspot.de/2009/10/groovy-goodness-reading-url-content.html[URL class].)
+
 == Functional testing using Geb and Selenium
 
 I've prepared an example, we might want to look into:
@@ -303,11 +305,70 @@ git clone https://github.com/kiview/example-voting-app.git
 
 == Bonus: Testing your Docker containers with Testcontainers and Groovy scripts
 
-TODO
+Imagine we have a setup with a Nginx proxy redirecting to our service container (for the sake of simplicity we will simply use an Apache container for this example). The nginx config should go into a `default.conf` file and could look like this:
 
-See this https://medium.com/@bsideup/testing-your-docker-containers-with-testcontainers-and-groovy-3b9ef97ad1c2[blog post].
+[source, nginx]
+----
+server {
+    listen       80;
+    server_name  localhost;
+    rewrite ^/$ http://apache redirect;
+}
+----
+
+Next create a groovy script file, i.e. `test.groovy` and insert the following boilerplate code:
+[source, groovy]
+----
+#!/usr/bin/env groovy
+
+@GrabResolver(name='jitpack', root='https://jitpack.io', m2Compatible='true')
+@Grab(group='org.testcontainers', module='testcontainers', version='1.6.0')
+@Grab('com.github.testcontainers:testcontainers-groovy-script:1.4.2')
+@Grab(group='io.rest-assured', module='rest-assured', version='3.0.7', scope='test')
+@GrabExclude('org.codehaus.groovy:groovy-xml')
+@groovy.transform.BaseScript(TestcontainersScript)
+import io.restassured.*
+import org.testcontainers.containers.*
+import org.junit.*
+import static io.restassured.RestAssured.*
+import static org.hamcrest.Matchers.*
+----
+
+You can think of a Groovy script as a Java main-class without the additional class syntax overhead. This means you can start writing your test code directly below the import statements.
+
+You should look into https://www.testcontainers.org/usage/options.html#volume-mapping[`withClasspathResourceMapping`] for your container setup (the nginx-config file needs to be mounted to `/etc/nginx/conf.d/default.conf`). Also you will need to wire your apache and nginx together into one docker network. Create a new Network instance and pass it to `withNetwork(network)` for this. If you want to leverage Docker's name based DNS feature, you can define a network alias for your container using `withNetworkAlias(alias)`.
+
+[source, groovy]
+----
+Network testNetwork = newNetwork()
+
+GenericContainer nginx = new GenericContainer("nginx:1.9.4")
+        .withNetwork(testNetwork)
+----
+
+You can start containers manually by calling the `start()` method on the container object. You'll also need an additional apache container (you can use the `httpd:2.4` image for this exercise).
+
+To get started with using RestAssured, refer to their http://rest-assured.io/[Website]. Set it up to refer to the nginx:
+[source, groovy]
+----
+def myBaseUrl = // obtain the correct base url from your containers
+RestAssured.baseURI = "http://myBaseUrl"
+----
+
+A simple RestAssured test will look like this:
+[source, groovy]
+----
+when()
+            .get("/somePath")
+    .then()
+            .statusCode(200)
+            .body(containsString("foobarBaz"))
+----
+
+Of course setting up containers and the base url can be encapsulated in i.e. a `@BeforeClass` method, but for sake of simplicity, we can simply perform this stuff directly in a test method (annotated with `@Test`).
+
 
 == Acknowledgements
 
 * https://github.com/alvarosanchez[Álvaro Sánchez-Mariscal] and https://github.com/musketyr[Vladimir Orany] for giving me a
-kickstart using AsciiDoc for this workshop
+kickstart using AsciiDoc for this workshop and https://medium.com/@bsideup/testing-your-docker-containers-with-testcontainers-and-groovy-3b9ef97ad1c2[Sergei Egorov] for his blog post about using Testcontainers in Groovy scripts.
