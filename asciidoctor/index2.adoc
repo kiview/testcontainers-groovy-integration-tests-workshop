@@ -27,10 +27,8 @@ the best IDE for Java and JVM language development. You can just use the Communi
 
 === Documentation ===
 
-During the course of this workshop, it's highly likely you want to check out some details in the documentation of any of the used technologies. While the excercises mention relevant docs where necessary, here is a comprehensive list of links:
+During the course of this workshop, it's highly likely you want to check out some details in the documentation of any of the used technologies. While the excercises mention relevant docs where necessary, here is a list of links:
 
-* https://docs.oracle.com/javase/9/docs/api/overview-summary.html[Java] - (definitely use the search function there!)
-* http://TODO[TODO: Gradle]
 * http://groovy-lang.org/documentation.html#languagespecification[Groovy]
 * http://spockframework.org/[Spock]
 * https://www.testcontainers.org/[Testcontainers]
@@ -201,9 +199,71 @@ jdbc:tc:postgresql://hostname/databasename
 * Run your new tests and make sure they are green!
 
 === Excercise 4: Interact with an external HTTP-Server
-TODO: Port over
 
-=== Exercise 5: Demo Functional Testing using Geb and Selenium
+Now we want to think about testing the integration with a real external application. This could be anything
+which we'd be able to run inside a container, but in order to keep things simple, we have a very basic example:
+Downloading a file from an HTTP-Server.
+
+Let's start with a service class skeleton, which looks like this:
+
+[source, groovy]
+----
+class HttpDownloaderService {
+
+    private String serverIp
+
+    private String serverPort
+
+    HttpDownloaderService(String serverIp, String serverPort) {
+        // ...
+    }
+
+    String downloadFile(String path) {
+        // ...
+    }
+}
+----
+
+
+==== Generic Container
+
+For this integration test, we want to use an Apache web server. Fortunately, there is a ready to use Docker image: `httpd:alpine`
+
+Testcontainers provides a generic API for Docker images called `GenericContainer`. We also need to tell Testcontainers which port
+we want the container to expose and as before, Testcontainers will find use a free port on our host system and setup up
+the appropriate mapping.
+
+We might also want to have some specific files on the server we can use for our tests and Testcontainers will allow us
+to mount files on the classpath into the container:
+
+[source, java]
+----
+GenericContainer httpContainer = new GenericContainer("httpd:alpine")
+            .withExposedPorts(80)
+            .withClasspathResourceMapping("foo.txt", "/usr/local/apache2/htdocs/foo.txt", BindMode.READ_ONLY);
+----
+
+The `GenericContainer` interface also provides the methods to retrieve the actual container IP and port at runtime:
+
+[source, java]
+----
+httpContainer.getContainerIpAddress();
+httpContainer.getMappedPort(80);
+----
+
+==== Goals
+Write an integration test as well as the corresponding production code to make the test green. You might want to use
+the wonderful new https://github.com/http-builder-ng/http-builder-ng[HttpBuilder-NG] for the implementation code:
+
+[source, groovy]
+----
+compile 'io.github.http-builder-ng:http-builder-ng-core:0.16.1'
+----
+
+(As an alternative solution, you can also check out the Groovy enhanced http://mrhaki.blogspot.de/2009/10/groovy-goodness-reading-url-content.html[URL class].)
+
+
+=== Excercise 5: Demo Functional Testing using Geb and Selenium
 
 We've prepared an example we might want to look into:
 
@@ -211,6 +271,70 @@ We've prepared an example we might want to look into:
 ----
 git clone https://github.com/kiview/example-voting-app.git
 ----
+
+=== BONUS Excercise: Testing your Docker containers with Testcontainers and Groovy scripts
+
+Imagine we have a setup with a Nginx proxy redirecting to our service container (for the sake of simplicity we will simply use an Apache container for this example). The nginx config should go into a `default.conf` file and could look like this:
+
+[source, nginx]
+----
+server {
+    listen       80;
+    server_name  localhost;
+    rewrite ^/$ http://apache redirect;
+}
+----
+
+Next create a groovy script file, i.e. `test.groovy` and insert the following boilerplate code:
+[source, groovy]
+----
+#!/usr/bin/env groovy
+
+@GrabResolver(name='jitpack', root='https://jitpack.io', m2Compatible='true')
+@Grab(group='org.testcontainers', module='testcontainers', version='1.6.0')
+@Grab('com.github.testcontainers:testcontainers-groovy-script:1.4.2')
+@Grab(group='io.rest-assured', module='rest-assured', version='3.0.7', scope='test')
+@GrabExclude('org.codehaus.groovy:groovy-xml')
+@groovy.transform.BaseScript(TestcontainersScript)
+import io.restassured.*
+import org.testcontainers.containers.*
+import org.junit.*
+import static io.restassured.RestAssured.*
+import static org.hamcrest.Matchers.*
+----
+
+You can think of a Groovy script as a Java main-class without the additional class syntax overhead. This means you can start writing your test code directly below the import statements.
+
+You should look into https://www.testcontainers.org/usage/options.html#volume-mapping[`withClasspathResourceMapping`] for your container setup (the nginx-config file needs to be mounted to `/etc/nginx/conf.d/default.conf`). Also you will need to wire your apache and nginx together into one docker network. Create a new Network instance and pass it to `withNetwork(network)` for this. If you want to leverage Docker's name based DNS feature, you can define a network alias for your container using `withNetworkAlias(alias)`.
+
+[source, groovy]
+----
+Network testNetwork = newNetwork()
+
+GenericContainer nginx = new GenericContainer("nginx:1.9.4")
+        .withNetwork(testNetwork)
+----
+
+You can start containers manually by calling the `start()` method on the container object. You'll also need an additional apache container (you can use the `httpd:2.4` image for this exercise).
+
+To get started with using RestAssured, refer to their http://rest-assured.io/[Website]. Set it up to refer to the nginx:
+[source, groovy]
+----
+def myBaseUrl = // obtain the correct base url from your containers
+RestAssured.baseURI = "http://myBaseUrl"
+----
+
+A simple RestAssured test will look like this:
+[source, groovy]
+----
+when()
+            .get("/somePath")
+    .then()
+            .statusCode(200)
+            .body(containsString("foobarBaz"))
+----
+
+Of course setting up containers and the base url can be encapsulated in i.e. a `@BeforeClass` method, but for sake of simplicity, we can simply perform this stuff directly in a test method (annotated with `@Test`).
 
 == Acknowledgements
 
