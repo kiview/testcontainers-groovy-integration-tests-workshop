@@ -57,7 +57,7 @@ If you have any questions or get stuck, don't hesitate to ask!
 * Take a look at the codebase and notice the technologies used:
 ** It's a Gradle project
 ** It has a JUnit integration test against a H2 in memory database
-** Database schema is created as part of the test.
+** The Database schema is created by Flyway
 * Run a quick Gradle build in order to check if everything works.
 
 [source, bash]
@@ -70,10 +70,9 @@ cd testcontainers-groovy-integration-tests-workshop-workspace
 === Excercise 1: Enter Testcontainers ===
 
 > You just saw that the existing tests passed. Just then, you are notified about a customer complaint:
-Apparently, none of the books they try to save end up in their PostgresDB. 
+Apparently, they just integrated your application, but somewhere along the line, the program crashes. 
 As you ask your team about it, you're met with a classic response: "It works on my machine!". 
-Then, their expressions turn grim: The tests currently only run against an H2 Database - 
-after all, they are supposed to run the same on their CI-Server and their developer machines.
+As you tell them the customer is using *PostgreSQL*, their expressions turn grim: The tests currently only run against a local H2 Database.
 
 This situation is a perfect fit for https://github.com/testcontainers/testcontainers-java[Testcontainers]. 
 You can find an extensive documentation about using Testcontainers https://www.testcontainers.org/[here], so we will just do a quick overview in this excercise.
@@ -86,8 +85,9 @@ Here are two examples:
 [source, java]
 ----
 // Set up a redis container
-@ClassRule
-public static GenericContainer redis =
+// @Rule restarts containers between test methods
+@Rule
+public GenericContainer redis =
     new GenericContainer("redis:3.0.2")
                .withExposedPorts(6379);
 
@@ -95,6 +95,7 @@ public static GenericContainer redis =
 // Set up a plain OS container and customize environment,
 // command and exposed ports. This just listens on port 80 
 // and always returns '42'
+// @ClassRule starts container once before all test methods
 @ClassRule
 public static GenericContainer alpine =
     new GenericContainer("alpine:3.2")
@@ -115,6 +116,13 @@ TestContainers provides out of the box support for the following databases:
 * Oracle XE
 * Virtuoso
 
+Specialized containers can simply be instantiated like this:
+[source, java]
+----
+@Rule
+public MySQLContainer mysql = new MySQLContainer();
+----
+
 We want our tests to be as portable as possible and so one shouldn't make assumptions regarding the environment they are
 running in (like i.e. free ports). Luckily Testcontainers will already do all the heavy lifting for you and start
 the database on a free port (by leveraging the underlying container technology). By using methods like `postgreSQLContainer.getJdbcUrl()`
@@ -127,11 +135,13 @@ it's possible to get the concrete values a runtime. Of course, production code n
 
 === Excercise 1.1: A small fix ===
 > Your new teammates are amazed by how quickly you found that bug - and by writing a portable test, too! 
-Your team's database expert takes a quick look and provides you with a fix for the `save` method of the `BookRepository`:
+Your team's database expert takes a quick look and provides you with a fix for the `count` method of the `BookRepository`.
+Apparently, some debug code was left over there in `line 44` - you only need to *remove it*:
 
-[source, sql]
+
+[source, java]
 ----
-TODO: Fixed SQL line here
+c.createStatement().execute("SET @foobar = 4");
 ----
 
 ==== Goals
@@ -139,56 +149,29 @@ TODO: Fixed SQL line here
 * Run the tests again.
 * Once the tests are green, reflect a moment on how quick you were in doing so.
 
+=== Excercise 2: Use Spock
 
-=== Excercise 2: Centralizing the Initialization Script ===
-
-> Since all tests are green again, this seems a good opportunity to refactor some things. You notice the "[TODO: Initscript feature]" of testcontainers - this should be helpful!
-
-TODO: Theory part about that feature
+> You just came back from a really good Groovy conference where you learned about http://spockframework.org/[Spock]. You immediately want to convert your entire test suite.
 
 ==== Goals
-* Move the initialization SQL out of the test method into its own file.
-* Use that file for initialization by leveraging the `[TODO: Initscript feature]` of testcontainers.
-* Make sure your tests are still green!
-
-=== Excercise 2.1: Spawn the Database using the JDBC-URL
-
-> TODO: Story?
-
-As long as you have Testcontainers and the appropriate JDBC driver on your classpath, you can simply modify regular JDBC
-connection URLs to get a fresh containerized instance of the database each time your application starts up (meaning
-on initialization of the JDBC connection pool). This can be used as an alternative to the way we've seen in the last exercise.
-
-The JDBC-URL approach already supports using a database https://www.testcontainers.org/usage/database_containers.html#using-an-init-script[init script]
-----
-jdbc:tc:postgresql://hostname/databasename
-----
-
-==== Goals
-* Try out this implicit way of spawning containers. You could duplicate your test class for that.
-* Run your new tests and make sure they are green!
-
-=== Excercise 3: Use Spock
-
-> You just came back from a really good Groovy conference where you learned about http://spockframework.org/[Spock]. You immediately want to convert your test suite.
-
-==== Goals
-* Convert your test suite to Spock. It's okay to remove *one* of your duplicated test classes first - choose freely.
+* Convert your test suite to Spock.
 * Run your Spock tests and make sure they are green!
 
-=== Excercise 3.1: Use the Spock-Extension for Testcontainers
+=== Excercise 2.1: Use the Spock-Extension for Testcontainers
 
-> You feel already much more at ease using Spock, but somehow, the Testcontainer stuff does not seem to fit the newfound elegance now.
-Luckily, there is the We then add in the https://github.com/testcontainers/testcontainers-spock[Testcontainers Spock extension] to make things even easier.
+> You probably feel already much more at ease using Spock, but somehow, the Testcontainer stuff does not seem to fit the newfound elegance now.
+Luckily, there is the https://github.com/testcontainers/testcontainers-spock[Testcontainers Spock extension] to make things even easier.
 
-With that, we don't need to add the `@ClassRule` annotation to our containers anymore. The `testcontainers-spock` extension does a great job taking this off our hands, just make sure your Specification is annotated `@Testcontainers`. 
-The optional `static` modifier is replaced by annotating `@Shared`, making our container persistent across all test methods:
+With that, we don't need to add the `@Rule` or `@ClassRule` annotations to our containers anymore. The `testcontainers-spock` extension does a great job taking this off our hands, just make sure your Specification is annotated `@Testcontainers`. 
+For recreating the behaviour of `@ClassRule` annotated contains, the `static` modifier is dropped and the annotation replaced with `@Shared`. 
+This again makes our container persistent across all test methods:
 [source, groovy]
 ----
 @Testcontainers
 class RedisTest extends Specification {
 
     @Shared
+    // @Shared starts container once before all test methods
     public GenericContainer redis =
         new GenericContainer("redis:3.0.2")
                 .withExposedPorts(6379);
@@ -200,6 +183,22 @@ class RedisTest extends Specification {
 ==== Goals
 * Enhance your testing suite further by using the features from the `testcontainers-spock` extension.
 * Run your tests and make sure they are green!
+
+
+=== Excercise 3: Spawn the Database using the JDBC-URL
+> Someone in your team really misses the short and concise way they could connect to the H2 test database. Now is you chance to brighten their day!
+
+As long as you have Testcontainers and the appropriate JDBC driver on your classpath, you can simply modify regular JDBC
+connection URLs to get a fresh containerized instance of the database each time your application starts up (meaning
+on initialization of the JDBC connection pool). This can be used as an alternative to the way we've seen in the last exercise.
+
+----
+jdbc:tc:postgresql://hostname/databasename
+----
+
+==== Goals
+* Try out this implicit way of spawning containers.
+* Run your new tests and make sure they are green!
 
 === Excercise 4: Interact with an external HTTP-Server
 TODO: Port over
