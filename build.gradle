@@ -20,7 +20,7 @@ asciidoctor {
     }
 
     sources {
-        include 'index.adoc'
+        include 'index2.adoc'
     }
 
     attributes 'toc'                : 'left',
