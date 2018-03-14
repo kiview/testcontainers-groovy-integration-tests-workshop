@@ -522,31 +522,23 @@ table.CodeRay td.code>pre{padding:0}
 <ul class="sectlevel1">
 <li><a href="#_getting_started">Getting started</a>
 <ul class="sectlevel2">
-<li><a href="#_getting_the_example_project">Getting the example project</a></li>
-<li><a href="#_testcontainers_quickstart">Testcontainers Quickstart</a></li>
+<li><a href="#_documentation">Documentation</a></li>
+<li><a href="#_doing_the_workshop">Doing the Workshop</a></li>
 </ul>
 </li>
-<li><a href="#_integration_testing_using_a_real_database">Integration testing using a real database</a>
+<li><a href="#_excercises">Excercises</a>
 <ul class="sectlevel2">
-<li><a href="#_configure_sut_at_runtime">Configure SUT at runtime</a></li>
-<li><a href="#_exercise_1">Exercise 1</a></li>
-<li><a href="#_testcontainers_jdbc_url">TestContainers JDBC-URL</a></li>
-<li><a href="#_exercise_2">Exercise 2</a></li>
+<li><a href="#_excercise_0_setting_up">Excercise 0: Setting up</a></li>
+<li><a href="#_excercise_1_enter_testcontainers">Excercise 1: Enter Testcontainers</a></li>
+<li><a href="#_excercise_1_1_a_small_fix">Excercise 1.1: A small fix</a></li>
+<li><a href="#_excercise_2_use_spock">Excercise 2: Use Spock</a></li>
+<li><a href="#_excercise_2_1_use_the_spock_extension_for_testcontainers">Excercise 2.1: Use the Spock-Extension for Testcontainers</a></li>
+<li><a href="#_excercise_3_spawn_the_database_using_the_jdbc_url">Excercise 3: Spawn the Database using the JDBC-URL</a></li>
+<li><a href="#_excercise_4_interact_with_an_external_http_server">Excercise 4: Interact with an external HTTP-Server</a></li>
+<li><a href="#_excercise_5_demo_functional_testing_using_geb_and_selenium">Excercise 5: Demo Functional Testing using Geb and Selenium</a></li>
+<li><a href="#_bonus_excercise_testing_your_docker_containers_with_testcontainers_and_groovy_scripts">BONUS Excercise: Testing your Docker containers with Testcontainers and Groovy scripts</a></li>
 </ul>
 </li>
-<li><a href="#_excursus_groovy_spock">Excursus: Groovy &amp; Spock</a>
-<ul class="sectlevel2">
-<li><a href="#_exercise_2_5">Exercise 2.5</a></li>
-</ul>
-</li>
-<li><a href="#_interact_with_an_external_http_server">Interact with an external HTTP-Server</a>
-<ul class="sectlevel2">
-<li><a href="#_generic_container">Generic Container</a></li>
-<li><a href="#_exercise_3">Exercise 3</a></li>
-</ul>
-</li>
-<li><a href="#_functional_testing_using_geb_and_selenium">Functional testing using Geb and Selenium</a></li>
-<li><a href="#_bonus_testing_your_docker_containers_with_testcontainers_and_groovy_scripts">Bonus: Testing your Docker containers with Testcontainers and Groovy scripts</a></li>
 <li><a href="#_acknowledgements">Acknowledgements</a></li>
 </ul>
 </div>
@@ -608,9 +600,91 @@ know all the details, but some topics might get too complex if you are missing t
 the best IDE for Java and JVM language development. You can just use the Community Edition if you want to (which will miss Groovy support).</p>
 </div>
 <div class="sect2">
-<h3 id="_getting_the_example_project">Getting the example project</h3>
+<h3 id="_documentation">Documentation</h3>
 <div class="paragraph">
-<p>Checkout the project from Github and run a quick Gradle build in order to check if everything works (the test is expected to fail :wink:)</p>
+<p>During the course of this workshop, it&#8217;s highly likely you want to check out some details in the documentation of any of the used technologies. While the excercises mention relevant docs where necessary, here is a list of links:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://groovy-lang.org/documentation.html#languagespecification">Groovy</a></p>
+</li>
+<li>
+<p><a href="http://spockframework.org/">Spock</a></p>
+</li>
+<li>
+<p><a href="https://www.testcontainers.org/">Testcontainers</a></p>
+</li>
+<li>
+<p><a href="https://github.com/testcontainers/testcontainers-spock">Testcontainers-Spock-Extension</a></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_doing_the_workshop">Doing the Workshop</h3>
+<div class="paragraph">
+<p>This workshop is structured into multiple excercises. Each excercise introduces a new concept and provides you with a task to solve by coding.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Although not mandatory, we <strong>do</strong> recommend you to try and work in pairs. This will allow you to get feedback for your ideas quickly, and also help you spot errors right away. Just keep in mind to switch positions at the keyboard every few minutes!</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If you have any questions or get stuck, don&#8217;t hesitate to ask!</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_excercises">Excercises</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_excercise_0_setting_up">Excercise 0: Setting up</h3>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>You have just been assigned to an existing project. You and your team are responsible for creating an inventory tool for bookstores. It&#8217;s a Gradle project. You are told that most of the functionality has already been done. This sounds a bit suspicious: It&#8217;s never that easy, is it?</p>
+</div>
+</blockquote>
+</div>
+<div class="sect3">
+<h4 id="_goals">Goals</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Checkout the project from GitHub.</p>
+</li>
+<li>
+<p>Take a look at the codebase and notice the technologies used:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>It&#8217;s a Gradle project</p>
+</li>
+<li>
+<p>It has a JUnit integration test against a H2 in memory database</p>
+</li>
+<li>
+<p>The Database schema is created by Flyway</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Run a quick Gradle build in order to check if everything works.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -620,48 +694,36 @@ cd testcontainers-groovy-integration-tests-workshop-workspace
 </div>
 </div>
 </div>
+</div>
 <div class="sect2">
-<h3 id="_testcontainers_quickstart">Testcontainers Quickstart</h3>
+<h3 id="_excercise_1_enter_testcontainers">Excercise 1: Enter Testcontainers</h3>
 <div class="quoteblock">
 <blockquote>
 <div class="paragraph">
-<p><a href="https://github.com/testcontainers/testcontainers-java">Testcontainers</a> is a Java 8 library that supports JUnit tests, providing lightweight, throwaway instances of common databases, Selenium web browsers, or anything else that can run in a Docker container.</p>
+<p>You just saw that the existing tests passed. Just then, you are notified about a customer complaint:
+Apparently, they just integrated your application, but somewhere along the line, the program crashes.
+As you ask your team about it, you&#8217;re met with a classic response: "It works on my machine!".
+As you tell them the customer is using <strong>PostgreSQL</strong>, their expressions turn grim: The tests currently only run against a local H2 Database.</p>
 </div>
 </blockquote>
 </div>
 <div class="paragraph">
-<p>There also exists a special <a href="https://github.com/testcontainers/testcontainers-spock">Testcontainers-Spock-Extension</a> which
-we&#8217;ll use later in this workshop (it also includes the Java version as a transitive dependency).</p>
+<p>This situation is a perfect fit for <a href="https://github.com/testcontainers/testcontainers-java">Testcontainers</a>.
+You can find an extensive documentation about using Testcontainers <a href="https://www.testcontainers.org/">here</a>, so we will just do a quick overview in this excercise.</p>
 </div>
 <div class="paragraph">
-<p>Since the most recent snapshot versions are available at <a href="https://jitpack.io/">jitpack.io</a>, you can
-include the dependency in your <code>build.gradle</code> file like this:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">repositories {
-    mavenCentral()
-    maven { url <span class="string"><span class="delimiter">'</span><span class="content">https://jitpack.io</span><span class="delimiter">'</span></span> }
-}
-
-dependencies {
-    testCompile <span class="string"><span class="delimiter">'</span><span class="content">com.github.testcontainers:testcontainers-spock:1.0.0-tc1.6.0</span><span class="delimiter">'</span></span>
-}</code></pre>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_using_testcontainers">Using Testcontainers</h4>
-<div class="paragraph">
-<p>You can find an extensive documentation about using Testcontainers <a href="https://www.testcontainers.org/">here</a>, so we will just a quick overview in this chapter.</p>
+<p>Testcontainers is a Java 8 library that supports JUnit tests, providing lightweight, throwaway instances of common databases, Selenium web browsers, or anything else that can run in a Docker container.</p>
 </div>
 <div class="paragraph">
-<p>Testcontainers can be used in JUnit4 tests by initializing Testcontainers objects as fields of the test class and by either annotating these fields with <code>@Rule</code> or <code>@ClassRule</code> JUnit4 annotation. <code>@Rule</code> means, the container will be restarted between each test method, <code>@ClassRule</code> will result in reusing the same container for all test methods of the test class. Testcontainers utilizes a fluent builder API for creating containers, this is an example:</p>
+<p>In JUnit4 tests, Testcontainers can be used by initializing <em>Testcontainers objects</em> as fields of the test class and by either annotating these fields with <code>@Rule</code> or <code>@ClassRule</code> JUnit4 annotation. <code>@Rule</code> means, the container will be restarted between each test method, <code>@ClassRule</code> will result in reusing the same container for all test methods of the test class. Testcontainers utilizes a fluent builder API for creating containers.
+Here are two examples:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// Set up a redis container</span>
-<span class="annotation">@ClassRule</span>
-<span class="directive">public</span> <span class="directive">static</span> GenericContainer redis =
+<span class="comment">// @Rule restarts containers between test methods</span>
+<span class="annotation">@Rule</span>
+<span class="directive">public</span> GenericContainer redis =
     <span class="keyword">new</span> GenericContainer(<span class="string"><span class="delimiter">&quot;</span><span class="content">redis:3.0.2</span><span class="delimiter">&quot;</span></span>)
                .withExposedPorts(<span class="integer">6379</span>);
 
@@ -669,6 +731,7 @@ dependencies {
 <span class="comment">// Set up a plain OS container and customize environment,</span>
 <span class="comment">// command and exposed ports. This just listens on port 80</span>
 <span class="comment">// and always returns '42'</span>
+<span class="comment">// @ClassRule starts container once before all test methods</span>
 <span class="annotation">@ClassRule</span>
 <span class="directive">public</span> <span class="directive">static</span> GenericContainer alpine =
     <span class="keyword">new</span> GenericContainer(<span class="string"><span class="delimiter">&quot;</span><span class="content">alpine:3.2</span><span class="delimiter">&quot;</span></span>)
@@ -678,16 +741,6 @@ dependencies {
                <span class="string"><span class="delimiter">&quot;</span><span class="content">while true; do echo </span><span class="char">\&quot;</span><span class="content">$MAGIC_NUMBER</span><span class="char">\&quot;</span><span class="content"> | nc -l -p 80; done</span><span class="delimiter">&quot;</span></span>);</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p><code>GenericContainer</code> is a special Testcontainers class and can be used for every Docker image, for which no specialized Testcontainers implementation exists. Existing specialized container classes are i.e. <code>PostgreSQLContainer</code>, <code>MySQLContainer</code> or <code>BrowserWebDriverContainer</code>. These specialized containers might provide additional API methods for more convenient usage inside tests, like <code>getJdbcUrl()</code> in case of database containers.</p>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_integration_testing_using_a_real_database">Integration testing using a real database</h2>
-<div class="sectionbody">
 <div class="paragraph">
 <p>A classic use case for integration testing is the persistence layer. An often found default approach is to use an embedded H2 in-memory database and run each test inside its own database transaction, which is rolled back after each test method.
 This might work for a lot use case, but sometimes it&#8217;s beneficial to use a real database for the integration tests, which
@@ -713,172 +766,111 @@ will provide you with the extra level of confidence regarding vendor specific SQ
 </ul>
 </div>
 <div class="paragraph">
-<p>We&#8217;ll use PostgreSQL in the following example, so we need to include an additional dependency in our <code>build.gradle</code> file:</p>
+<p>Specialized containers can simply be instantiated like this:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="comment">// https://mvnrepository.com/artifact/org.testcontainers/postgresql</span>
-testCompile <span class="key">group</span>: <span class="string"><span class="delimiter">'</span><span class="content">org.testcontainers</span><span class="delimiter">'</span></span>, <span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">postgresql</span><span class="delimiter">'</span></span>, <span class="key">version</span>: <span class="string"><span class="delimiter">'</span><span class="content">1.6.0</span><span class="delimiter">'</span></span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Rule</span>
+<span class="directive">public</span> MySQLContainer mysql = <span class="keyword">new</span> MySQLContainer();</code></pre>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_configure_sut_at_runtime">Configure SUT at runtime</h3>
 <div class="paragraph">
 <p>We want our tests to be as portable as possible and so one shouldn&#8217;t make assumptions regarding the environment they are
 running in (like i.e. free ports). Luckily Testcontainers will already do all the heavy lifting for you and start
 the database on a free port (by leveraging the underlying container technology). By using methods like <code>postgreSQLContainer.getJdbcUrl()</code>
-it&#8217;s possible to get the concrete values a runtime. Of course, production codes need to be written in such a way, that you can inject those values into the SUT at test runtime, i.e. specify such values in the constructor.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_exercise_1">Exercise 1</h3>
-<div class="paragraph">
-<p>Write integration tests for each method of <code>BookRepository</code> and implement <code>BookRepository</code> accordingly.</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-<div class="paragraph">
-<p>You might need additional runtime dependencies!</p>
-</div>
-<div class="paragraph">
-<p>For the production code, it&#8217;s okay to go completely vanilla Java and use <code>DriverManager</code> and <a href="https://docs.oracle.com/javase/tutorial/jdbc/basics/connecting.html"><code>Connection</code></a>. You can use <code>DriverManager.getConnection(jdbcUrl, username, password)</code> and <code>c.createStatement()</code>.</p>
-</div>
-<div class="paragraph">
-<p>Also remember to initialize the database schema before the test. Future versions of Testcontainers will provide special API methods for helping with this (see <a href="https://github.com/testcontainers/testcontainers-java/pull/575">PR</a>), but for now you have to do it manually or use <a href="https://flywaydb.org/">Flyway</a> if you want to.</p>
-</div>
-</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_testcontainers_jdbc_url">TestContainers JDBC-URL</h3>
-<div class="paragraph">
-<p>As long as you have Testcontainers and the appropriate JDBC driver on your classpath, you can simply modify regular JDBC
-connection URLs to get a fresh containerized instance of the database each time your application starts up (meaning
-on initialization of the JDBC connection pool). This can be used as an alternative to the way we&#8217;ve seen in the last exercise.</p>
-</div>
-<div class="admonitionblock caution">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-caution" title="Caution"></i>
-</td>
-<td class="content">
-<div class="paragraph">
-<p>Attention when using Spring-Boot (or Grails for that matter). In this case, you have to specify the following JDBC driver:</p>
-</div>
-<div class="paragraph">
-<p><code>spring.datasource.driver-class-name=org.testcontainers.jdbc.ContainerDatabaseDriver</code></p>
-</div>
-<div class="paragraph">
-<p>which would translate to something like this for Grails:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>dataSource:
-  dbCreate: create
-  url: jdbc:tc:postgresql://hostname/databasename
-  driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver</pre>
-</div>
-</div>
-</td>
-</tr>
-</table>
+it&#8217;s possible to get the concrete values a runtime. Of course, production code needs to be written in such a way that you can inject those values into the SUT at test runtime, i.e. specify such values in the constructor.</p>
 </div>
 <div class="sect3">
-<h4 id="_mysql">MySQL</h4>
+<h4 id="_goals_2">Goals</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Take a good look at the examples and the online documentation for Testcontainers, especially the <code>PostgreSQLContainer</code> class.</p>
+</li>
+<li>
+<p>Replace or extend the existing test. Make it use a real postgres database utilizing a <code>PostgreSQLContainer</code>.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Notice: This test has to <strong>fail</strong> - which is good! You successfully reproduced the customers' bug!</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_excercise_1_1_a_small_fix">Excercise 1.1: A small fix</h3>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Your new teammates are amazed by how quickly you found that bug - and by writing a portable test, too!
+Your team&#8217;s database expert takes a quick look and provides you with a fix for the <code>count</code> method of the <code>BookRepository</code>.
+Apparently, some debug code was left over there in <code>line 44</code> - you only need to <strong>remove it</strong>:</p>
+</div>
+</blockquote>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre>jdbc:tc:mysql://somehostname:someport/databasename</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>jdbc:tc:mysql:5.6.23://somehostname:someport/databasename</pre>
-</div>
+<pre class="CodeRay highlight"><code data-lang="java">c.createStatement().execute(<span class="string"><span class="delimiter">&quot;</span><span class="content">SET @foobar = 4</span><span class="delimiter">&quot;</span></span>);</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_postgresql">PostgreSQL</h4>
-<div class="listingblock">
-<div class="content">
-<pre>jdbc:tc:postgresql://hostname/databasename</pre>
-</div>
+<h4 id="_goals_3">Goals</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Apply the fix.</p>
+</li>
+<li>
+<p>Run the tests again.</p>
+</li>
+<li>
+<p>Once the tests are green, reflect a moment on how quick you were in doing so.</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_exercise_2">Exercise 2</h3>
+<h3 id="_excercise_2_use_spock">Excercise 2: Use Spock</h3>
+<div class="quoteblock">
+<blockquote>
 <div class="paragraph">
-<p>Duplicate the test class you&#8217;ve written in the last exercise and use the special Testcontainers JDBC-URL this time.
-The JDBC-URL approach already supports using a database <a href="https://www.testcontainers.org/usage/database_containers.html#using-an-init-script">init script</a>.</p>
+<p>You just came back from a really good Groovy conference where you learned about <a href="http://spockframework.org/">Spock</a>. You immediately want to convert your entire test suite.</p>
+</div>
+</blockquote>
+</div>
+<div class="sect3">
+<h4 id="_goals_4">Goals</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Convert your test suite to Spock.</p>
+</li>
+<li>
+<p>Run your Spock tests and make sure they are green!</p>
+</li>
+</ul>
 </div>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_excursus_groovy_spock">Excursus: Groovy &amp; Spock</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>In exercise 1 and 2 we used JUnit to write the test that describe our systems behaviour.
-As the workshop&#8217;s name might have suggested, we now want to use <a href="http://groovy-lang.org/">Groovy</a> and it&#8217;s most formidable testing framework <a href="http://spockframework.org/">Spock</a> to do that in a much more expressive and readable way.
-We then add in the <a href="https://github.com/testcontainers/testcontainers-spock">Testcontainers Spock extension</a> to make things even easier.</p>
-</div>
-<div class="paragraph">
-<p>For Groovy and Spock, it suffices to pull in the dependency on Spock - Groovy will be pulled in transitively:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">testCompile <span class="key">group</span>: <span class="string"><span class="delimiter">'</span><span class="content">org.spockframework</span><span class="delimiter">'</span></span>, <span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">spock-core</span><span class="delimiter">'</span></span>, <span class="key">version</span>: <span class="string"><span class="delimiter">'</span><span class="content">1.1-groovy-2.4</span><span class="delimiter">'</span></span></code></pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-<div class="paragraph">
-<p>As an aside: Groovy is nothing new to any of you by now - in fact, the entire <code>build.gradle</code> file is valid Groovy!</p>
-</div>
-</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>For the Spock extension for Testcontainers, grab the release off the jitpack repository:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">repositories {
-    mavenCentral()
-    maven { url <span class="string"><span class="delimiter">'</span><span class="content">https://jitpack.io</span><span class="delimiter">'</span></span> }
-}
-
-dependencies {
-    testCompile <span class="string"><span class="delimiter">'</span><span class="content">com.github.testcontainers:testcontainers-spock:1.0.0-tc1.6.0</span><span class="delimiter">'</span></span>
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>To give you a boost, all necessary dependencies are already declared in your <code>build.gradle</code>.</p>
 </div>
 <div class="sect2">
-<h3 id="_exercise_2_5">Exercise 2.5</h3>
+<h3 id="_excercise_2_1_use_the_spock_extension_for_testcontainers">Excercise 2.1: Use the Spock-Extension for Testcontainers</h3>
+<div class="quoteblock">
+<blockquote>
 <div class="paragraph">
-<p>You can get your feet wet by porting your test from exercise 2 to Groovy and Spock.
-Take a look at the <a href="http://spockframework.org/spock/docs/1.1/spock_primer.html">Spock primer</a> to get the Specification skeleton right!</p>
+<p>You probably feel already much more at ease using Spock, but somehow, the Testcontainer stuff does not seem to fit the newfound elegance now.
+Luckily, there is the <a href="https://github.com/testcontainers/testcontainers-spock">Testcontainers Spock extension</a> to make things even easier.</p>
+</div>
+</blockquote>
 </div>
 <div class="paragraph">
-<p>Note that we don&#8217;t need to add the <code>@ClassRule</code> annotation to our containers anymore. The <code>testcontainers-spock</code> extension does a great job taking this off our hands, just make sure your Specification is annotated <code>@Testcontainers</code>.
-The optional <code>static</code> modifier is replaced by annotating <code>@Shared</code>, making our container persistent across all test methods:</p>
+<p>With that, we don&#8217;t need to add the <code>@Rule</code> or <code>@ClassRule</code> annotations to our containers anymore. The <code>testcontainers-spock</code> extension does a great job taking this off our hands, just make sure your Specification is annotated <code>@Testcontainers</code>.
+For recreating the behaviour of <code>@ClassRule</code> annotated contains, the <code>static</code> modifier is dropped and the annotation replaced with <code>@Shared</code>.
+This again makes our container persistent across all test methods:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -886,6 +878,7 @@ The optional <code>static</code> modifier is replaced by annotating <code>@Share
 <span class="type">class</span> <span class="class">RedisTest</span> <span class="directive">extends</span> Specification {
 
     <span class="annotation">@Shared</span>
+    <span class="comment">// @Shared starts container once before all test methods</span>
     <span class="directive">public</span> GenericContainer redis =
         <span class="keyword">new</span> GenericContainer(<span class="string"><span class="delimiter">&quot;</span><span class="content">redis:3.0.2</span><span class="delimiter">&quot;</span></span>)
                 .withExposedPorts(<span class="integer">6379</span>);
@@ -894,16 +887,55 @@ The optional <code>static</code> modifier is replaced by annotating <code>@Share
 }</code></pre>
 </div>
 </div>
+<div class="sect3">
+<h4 id="_goals_5">Goals</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Enhance your testing suite further by using the features from the <code>testcontainers-spock</code> extension.</p>
+</li>
+<li>
+<p>Run your tests and make sure they are green!</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_excercise_3_spawn_the_database_using_the_jdbc_url">Excercise 3: Spawn the Database using the JDBC-URL</h3>
+<div class="quoteblock">
+<blockquote>
 <div class="paragraph">
-<p>Once your rewritten tests are working and lighting up green in your IDE, take a look at Spock&#8217;s <a href="http://spockframework.org/spock/docs/1.1/data_driven_testing.html">Data Driven Testing</a> feature.
-Choose a test of your suite and extend it by using the <code>where:</code> block!</p>
+<p>Someone in your team really misses the short and concise way they could connect to the H2 test database. Now is you chance to brighten their day!</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>As long as you have Testcontainers and the appropriate JDBC driver on your classpath, you can simply modify regular JDBC
+connection URLs to get a fresh containerized instance of the database each time your application starts up (meaning
+on initialization of the JDBC connection pool). This can be used as an alternative to the way we&#8217;ve seen in the last exercise.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>jdbc:tc:postgresql://hostname/databasename</pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_goals_6">Goals</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Try out this implicit way of spawning containers.</p>
+</li>
+<li>
+<p>Run your new tests and make sure they are green!</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
-</div>
-<div class="sect1">
-<h2 id="_interact_with_an_external_http_server">Interact with an external HTTP-Server</h2>
-<div class="sectionbody">
+<div class="sect2">
+<h3 id="_excercise_4_interact_with_an_external_http_server">Excercise 4: Interact with an external HTTP-Server</h3>
 <div class="paragraph">
 <p>Now we want to think about testing the integration with a real external application. This could be anything
 which we&#8217;d be able to run inside a container, but in order to keep things simple, we have a very basic example:
@@ -914,24 +946,24 @@ Downloading a file from an HTTP-Server.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="type">class</span> <span class="class">HttpDownloaderService</span> {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">HttpDownloaderService</span> {
 
-    <span class="directive">private</span> <span class="predefined-type">String</span> serverIp;
+    <span class="directive">private</span> <span class="predefined-type">String</span> serverIp
 
-    <span class="directive">private</span> <span class="predefined-type">String</span> serverPort;
+    <span class="directive">private</span> <span class="predefined-type">String</span> serverPort
 
-    <span class="directive">public</span> HttpDownloaderService(<span class="predefined-type">String</span> serverIp, <span class="predefined-type">String</span> serverPort) {
+    HttpDownloaderService(<span class="predefined-type">String</span> serverIp, <span class="predefined-type">String</span> serverPort) {
         <span class="comment">// ...</span>
     }
 
-    <span class="directive">public</span> <span class="predefined-type">String</span> downloadFile(<span class="predefined-type">String</span> path) {
+    <span class="predefined-type">String</span> downloadFile(<span class="predefined-type">String</span> path) {
         <span class="comment">// ...</span>
     }
 }</code></pre>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_generic_container">Generic Container</h3>
+<div class="sect3">
+<h4 id="_generic_container">Generic Container</h4>
 <div class="paragraph">
 <p>For this integration test, we want to use an Apache web server. Fortunately, there is a ready to use Docker image: <code>httpd:alpine</code></p>
 </div>
@@ -961,8 +993,8 @@ httpContainer.getMappedPort(<span class="integer">80</span>);</code></pre>
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_exercise_3">Exercise 3</h3>
+<div class="sect3">
+<h4 id="_goals_7">Goals</h4>
 <div class="paragraph">
 <p>Write an integration test as well as the corresponding production code to make the test green. You might want to use
 the wonderful new <a href="https://github.com/http-builder-ng/http-builder-ng">HttpBuilder-NG</a> for the implementation code:</p>
@@ -977,12 +1009,10 @@ the wonderful new <a href="https://github.com/http-builder-ng/http-builder-ng">H
 </div>
 </div>
 </div>
-</div>
-<div class="sect1">
-<h2 id="_functional_testing_using_geb_and_selenium">Functional testing using Geb and Selenium</h2>
-<div class="sectionbody">
+<div class="sect2">
+<h3 id="_excercise_5_demo_functional_testing_using_geb_and_selenium">Excercise 5: Demo Functional Testing using Geb and Selenium</h3>
 <div class="paragraph">
-<p>I&#8217;ve prepared an example, we might want to look into:</p>
+<p>We&#8217;ve prepared an example we might want to look into:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -990,10 +1020,8 @@ the wonderful new <a href="https://github.com/http-builder-ng/http-builder-ng">H
 </div>
 </div>
 </div>
-</div>
-<div class="sect1">
-<h2 id="_bonus_testing_your_docker_containers_with_testcontainers_and_groovy_scripts">Bonus: Testing your Docker containers with Testcontainers and Groovy scripts</h2>
-<div class="sectionbody">
+<div class="sect2">
+<h3 id="_bonus_excercise_testing_your_docker_containers_with_testcontainers_and_groovy_scripts">BONUS Excercise: Testing your Docker containers with Testcontainers and Groovy scripts</h3>
 <div class="paragraph">
 <p>Imagine we have a setup with a Nginx proxy redirecting to our service container (for the sake of simplicity we will simply use an Apache container for this example). The nginx config should go into a <code>default.conf</code> file and could look like this:</p>
 </div>
@@ -1069,6 +1097,7 @@ RestAssured.baseURI = <span class="string"><span class="delimiter">&quot;</span>
 </div>
 </div>
 </div>
+</div>
 <div class="sect1">
 <h2 id="_acknowledgements">Acknowledgements</h2>
 <div class="sectionbody">
@@ -1085,7 +1114,7 @@ kickstart using AsciiDoc for this workshop and <a href="https://medium.com/@bsid
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-02-19 12:02:44 +01:00
+Last updated 2018-03-14 14:52:03 +01:00
 </div>
 </div>
 </body>
