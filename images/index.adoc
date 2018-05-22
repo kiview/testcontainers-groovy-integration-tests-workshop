@@ -55,7 +55,6 @@ If you have any questions or get stuck, don't hesitate to ask!
 * Take a look at the codebase and notice the technologies used:
 ** It's a Gradle project
 ** It has a JUnit integration test against a H2 in memory database
-** The Database schema is created by Flyway
 * Run a quick Gradle build in order to check if everything works.
 
 [source, bash]
