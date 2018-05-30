@@ -529,8 +529,17 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#_excercises">Excercises</a>
 <ul class="sectlevel2">
 <li><a href="#_excercise_0_setting_up">Excercise 0: Setting up</a></li>
+<li><a href="#_excercise_1_enter_testcontainers">Excercise 1: Enter Testcontainers</a></li>
+<li><a href="#_excercise_1_1_a_small_fix">Excercise 1.1: A small fix</a></li>
+<li><a href="#_excercise_2_use_spock">Excercise 2: Use Spock</a></li>
+<li><a href="#_excercise_2_1_use_the_spock_extension_for_testcontainers">Excercise 2.1: Use the Spock-Extension for Testcontainers</a></li>
+<li><a href="#_excercise_3_spawn_the_database_using_the_jdbc_url">Excercise 3: Spawn the Database using the JDBC-URL</a></li>
+<li><a href="#_excercise_4_interact_with_an_external_http_server">Excercise 4: Interact with an external HTTP-Server</a></li>
+<li><a href="#_excercise_5_demo_functional_testing_using_geb_and_selenium">Excercise 5: Demo Functional Testing using Geb and Selenium</a></li>
+<li><a href="#_bonus_excercise_testing_your_docker_containers_with_testcontainers_and_groovy_scripts">BONUS Excercise: Testing your Docker containers with Testcontainers and Groovy scripts</a></li>
 </ul>
 </li>
+<li><a href="#_acknowledgements">Acknowledgements</a></li>
 </ul>
 </div>
 </div>
@@ -664,22 +673,15 @@ the best IDE for Java and JVM language development. You can just use the Communi
 <p>It&#8217;s a Gradle project</p>
 </li>
 <li>
-<p>It has a JUnit integration test against a H2 in memory database
-&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</p>
+<p>It has a JUnit integration test against a H2 in memory database</p>
+</li>
+</ul>
+</div>
 </li>
 <li>
-<p>The Database schema is created by Flyway</p>
+<p>Run a quick Gradle build in order to check if everything works.</p>
 </li>
 </ul>
-</div>
-</li>
-</ul>
-</div>
-<div class="exampleblock">
-<div class="content">
-<div class="paragraph">
-<p>&gt;&gt;&gt;&gt;&gt;&gt;&gt; master
-* Run a quick Gradle build in order to check if everything works.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -688,9 +690,10 @@ cd testcontainers-groovy-integration-tests-workshop-workspace
 ./gradlew build</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>=== Excercise 1: Enter Testcontainers ===</p>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_excercise_1_enter_testcontainers">Excercise 1: Enter Testcontainers</h3>
 <div class="quoteblock">
 <blockquote>
 <div class="paragraph">
@@ -774,32 +777,62 @@ running in (like i.e. free ports). Luckily Testcontainers will already do all th
 the database on a free port (by leveraging the underlying container technology). By using methods like <code>postgreSQLContainer.getJdbcUrl()</code>
 it&#8217;s possible to get the concrete values a runtime. Of course, production code needs to be written in such a way that you can inject those values into the SUT at test runtime, i.e. specify such values in the constructor.</p>
 </div>
-<div class="paragraph">
-<p>==== Goals
-* Take a good look at the examples and the online documentation for Testcontainers, especially the <code>PostgreSQLContainer</code> class.
-* Replace or extend the existing test. Make it use a real postgres database utilizing a <code>PostgreSQLContainer</code>.
-<strong>* Notice: This test has to *fail</strong> - which is good! You successfully reproduced the customers' bug!</p>
+<div class="sect3">
+<h4 id="_goals_2">Goals</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Take a good look at the examples and the online documentation for Testcontainers, especially the <code>PostgreSQLContainer</code> class.</p>
+</li>
+<li>
+<p>Replace or extend the existing test. Make it use a real postgres database utilizing a <code>PostgreSQLContainer</code>.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Notice: This test has to <strong>fail</strong> - which is good! You successfully reproduced the customers' bug!</p>
+</li>
+</ul>
 </div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_excercise_1_1_a_small_fix">Excercise 1.1: A small fix</h3>
+<div class="quoteblock">
+<blockquote>
 <div class="paragraph">
-<p>=== Excercise 1.1: A small fix ===
-&gt; Your new teammates are amazed by how quickly you found that bug - and by writing a portable test, too!
+<p>Your new teammates are amazed by how quickly you found that bug - and by writing a portable test, too!
 Your team&#8217;s database expert takes a quick look and provides you with a fix for the <code>count</code> method of the <code>BookRepository</code>.
 Apparently, some debug code was left over there in <code>line 44</code> - you only need to <strong>remove it</strong>:</p>
+</div>
+</blockquote>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="java">c.createStatement().execute(<span class="string"><span class="delimiter">&quot;</span><span class="content">SET @foobar = 4</span><span class="delimiter">&quot;</span></span>);</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>==== Goals
-* Apply the fix.
-* Run the tests again.
-* Once the tests are green, reflect a moment on how quick you were in doing so.</p>
+<div class="sect3">
+<h4 id="_goals_3">Goals</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Apply the fix.</p>
+</li>
+<li>
+<p>Run the tests again.</p>
+</li>
+<li>
+<p>Once the tests are green, reflect a moment on how quick you were in doing so.</p>
+</li>
+</ul>
 </div>
-<div class="paragraph">
-<p>=== Excercise 2: Use Spock</p>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_excercise_2_use_spock">Excercise 2: Use Spock</h3>
 <div class="quoteblock">
 <blockquote>
 <div class="paragraph">
@@ -807,14 +840,22 @@ Apparently, some debug code was left over there in <code>line 44</code> - you on
 </div>
 </blockquote>
 </div>
-<div class="paragraph">
-<p>==== Goals
-* Convert your test suite to Spock.
-* Run your Spock tests and make sure they are green!</p>
+<div class="sect3">
+<h4 id="_goals_4">Goals</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Convert your test suite to Spock.</p>
+</li>
+<li>
+<p>Run your Spock tests and make sure they are green!</p>
+</li>
+</ul>
 </div>
-<div class="paragraph">
-<p>=== Excercise 2.1: Use the Spock-Extension for Testcontainers</p>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_excercise_2_1_use_the_spock_extension_for_testcontainers">Excercise 2.1: Use the Spock-Extension for Testcontainers</h3>
 <div class="quoteblock">
 <blockquote>
 <div class="paragraph">
@@ -843,14 +884,28 @@ This again makes our container persistent across all test methods:</p>
 }</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>==== Goals
-* Enhance your testing suite further by using the features from the <code>testcontainers-spock</code> extension.
-* Run your tests and make sure they are green!</p>
+<div class="sect3">
+<h4 id="_goals_5">Goals</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Enhance your testing suite further by using the features from the <code>testcontainers-spock</code> extension.</p>
+</li>
+<li>
+<p>Run your tests and make sure they are green!</p>
+</li>
+</ul>
 </div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_excercise_3_spawn_the_database_using_the_jdbc_url">Excercise 3: Spawn the Database using the JDBC-URL</h3>
+<div class="quoteblock">
+<blockquote>
 <div class="paragraph">
-<p>=== Excercise 3: Spawn the Database using the JDBC-URL
-&gt; Someone in your team really misses the short and concise way they could connect to the H2 test database. Now is you chance to brighten their day!</p>
+<p>Someone in your team really misses the short and concise way they could connect to the H2 test database. Now is you chance to brighten their day!</p>
+</div>
+</blockquote>
 </div>
 <div class="paragraph">
 <p>As long as you have Testcontainers and the appropriate JDBC driver on your classpath, you can simply modify regular JDBC
@@ -862,14 +917,22 @@ on initialization of the JDBC connection pool). This can be used as an alternati
 <pre>jdbc:tc:postgresql://hostname/databasename</pre>
 </div>
 </div>
-<div class="paragraph">
-<p>==== Goals
-* Try out this implicit way of spawning containers.
-* Run your new tests and make sure they are green!</p>
+<div class="sect3">
+<h4 id="_goals_6">Goals</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Try out this implicit way of spawning containers.</p>
+</li>
+<li>
+<p>Run your new tests and make sure they are green!</p>
+</li>
+</ul>
 </div>
-<div class="paragraph">
-<p>=== Excercise 4: Interact with an external HTTP-Server</p>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_excercise_4_interact_with_an_external_http_server">Excercise 4: Interact with an external HTTP-Server</h3>
 <div class="paragraph">
 <p>Now we want to think about testing the integration with a real external application. This could be anything
 which we&#8217;d be able to run inside a container, but in order to keep things simple, we have a very basic example:
@@ -896,9 +959,8 @@ Downloading a file from an HTTP-Server.</p>
 }</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>==== Generic Container</p>
-</div>
+<div class="sect3">
+<h4 id="_generic_container">Generic Container</h4>
 <div class="paragraph">
 <p>For this integration test, we want to use an Apache web server. Fortunately, there is a ready to use Docker image: <code>httpd:alpine</code></p>
 </div>
@@ -927,9 +989,11 @@ to mount files on the classpath into the container:</p>
 httpContainer.getMappedPort(<span class="integer">80</span>);</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_goals_7">Goals</h4>
 <div class="paragraph">
-<p>==== Goals
-Write an integration test as well as the corresponding production code to make the test green. You might want to use
+<p>Write an integration test as well as the corresponding production code to make the test green. You might want to use
 the wonderful new <a href="https://github.com/http-builder-ng/http-builder-ng">HttpBuilder-NG</a> for the implementation code:</p>
 </div>
 <div class="listingblock">
@@ -940,9 +1004,10 @@ the wonderful new <a href="https://github.com/http-builder-ng/http-builder-ng">H
 <div class="paragraph">
 <p>(As an alternative solution, you can also check out the Groovy enhanced <a href="http://mrhaki.blogspot.de/2009/10/groovy-goodness-reading-url-content.html">URL class</a>.)</p>
 </div>
-<div class="paragraph">
-<p>=== Excercise 5: Demo Functional Testing using Geb and Selenium</p>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_excercise_5_demo_functional_testing_using_geb_and_selenium">Excercise 5: Demo Functional Testing using Geb and Selenium</h3>
 <div class="paragraph">
 <p>We&#8217;ve prepared an example we might want to look into:</p>
 </div>
@@ -951,9 +1016,9 @@ the wonderful new <a href="https://github.com/http-builder-ng/http-builder-ng">H
 <pre class="CodeRay highlight"><code data-lang="bash">git clone https://github.com/kiview/example-voting-app.git</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>=== BONUS Excercise: Testing your Docker containers with Testcontainers and Groovy scripts</p>
 </div>
+<div class="sect2">
+<h3 id="_bonus_excercise_testing_your_docker_containers_with_testcontainers_and_groovy_scripts">BONUS Excercise: Testing your Docker containers with Testcontainers and Groovy scripts</h3>
 <div class="paragraph">
 <p>Imagine we have a setup with a Nginx proxy redirecting to our service container (for the sake of simplicity we will simply use an Apache container for this example). The nginx config should go into a <code>default.conf</code> file and could look like this:</p>
 </div>
@@ -1027,9 +1092,12 @@ RestAssured.baseURI = <span class="string"><span class="delimiter">&quot;</span>
 <div class="paragraph">
 <p>Of course setting up containers and the base url can be encapsulated in i.e. a <code>@BeforeClass</code> method, but for sake of simplicity, we can simply perform this stuff directly in a test method (annotated with <code>@Test</code>).</p>
 </div>
-<div class="paragraph">
-<p>== Acknowledgements</p>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_acknowledgements">Acknowledgements</h2>
+<div class="sectionbody">
 <div class="ulist">
 <ul>
 <li>
@@ -1041,13 +1109,9 @@ kickstart using AsciiDoc for this workshop and <a href="https://medium.com/@bsid
 </div>
 </div>
 </div>
-</div>
-</div>
-</div>
-</div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-05-30 09:24:32 CEST
+Last updated 2018-05-30 09:26:23 CEST
 </div>
 </div>
 </body>
