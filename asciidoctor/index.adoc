@@ -25,9 +25,37 @@ know all the details, but some topics might get too complex if you are missing t
 Also, although not mandatory, it's highly recommended to use https://www.jetbrains.com/idea/[IntelliJ IDEA], arguably
 the best IDE for Java and JVM language development. You can just use the Community Edition if you want to (which will miss Groovy support).
 
-=== Getting the example project
+=== Documentation ===
 
-Checkout the project from Github and run a quick Gradle build in order to check if everything works (the test is expected to fail :wink:)
+During the course of this workshop, it's highly likely you want to check out some details in the documentation of any of the used technologies. While the excercises mention relevant docs where necessary, here is a list of links:
+
+* http://groovy-lang.org/documentation.html#languagespecification[Groovy]
+* http://spockframework.org/[Spock]
+* https://www.testcontainers.org/[Testcontainers]
+* https://github.com/testcontainers/testcontainers-spock[Testcontainers-Spock-Extension]
+
+=== Doing the Workshop ===
+This workshop is structured into multiple excercises. Each excercise introduces a new concept and provides you with a task to solve by coding.
+
+[NOTE]
+====
+Although not mandatory, we *do* recommend you to try and work in pairs. This will allow you to get feedback for your ideas quickly, and also help you spot errors right away. Just keep in mind to switch positions at the keyboard every few minutes!
+====
+
+If you have any questions or get stuck, don't hesitate to ask!
+
+== Excercises ==
+
+=== Excercise 0: Setting up ===
+
+> You have just been assigned to an existing project. You and your team are responsible for creating an inventory tool for bookstores. It's a Gradle project. You are told that most of the functionality has already been done. This sounds a bit suspicious: It's never that easy, is it?
+
+==== Goals ====
+* Checkout the project from GitHub.
+* Take a look at the codebase and notice the technologies used:
+** It's a Gradle project
+** It has a JUnit integration test against a H2 in memory database
+* Run a quick Gradle build in order to check if everything works.
 
 [source, bash]
 ----
@@ -36,47 +64,35 @@ cd testcontainers-groovy-integration-tests-workshop-workspace
 ./gradlew build
 ----
 
-=== Testcontainers Quickstart
+=== Excercise 1: Enter Testcontainers ===
 
-____
-https://github.com/testcontainers/testcontainers-java[Testcontainers] is a Java 8 library that supports JUnit tests, providing lightweight, throwaway instances of common databases, Selenium web browsers, or anything else that can run in a Docker container.
-____
+> You just saw that the existing tests passed. Just then, you are notified about a customer complaint:
+Apparently, they just integrated your application, but somewhere along the line, the program crashes. 
+As you ask your team about it, you're met with a classic response: "It works on my machine!". 
+As you tell them the customer is using *PostgreSQL*, their expressions turn grim: The tests currently only run against a local H2 Database.
 
-There also exists a special https://github.com/testcontainers/testcontainers-spock[Testcontainers-Spock-Extension] which
-we'll use later in this workshop (it also includes the Java version as a transitive dependency).
+This situation is a perfect fit for https://github.com/testcontainers/testcontainers-java[Testcontainers]. 
+You can find an extensive documentation about using Testcontainers https://www.testcontainers.org/[here], so we will just do a quick overview in this excercise.
 
-Since the most recent snapshot versions are available at https://jitpack.io/[jitpack.io], you can
-include the dependency in your `build.gradle` file like this:
+Testcontainers is a Java 8 library that supports JUnit tests, providing lightweight, throwaway instances of common databases, Selenium web browsers, or anything else that can run in a Docker container.
 
-[source, groovy]
-----
-repositories {
-    mavenCentral()
-    maven { url 'https://jitpack.io' }
-}
-
-dependencies {
-    testCompile 'com.github.testcontainers:testcontainers-spock:1.0.0-tc1.6.0'
-}
-----
-
-==== Using Testcontainers
-You can find an extensive documentation about using Testcontainers https://www.testcontainers.org/[here], so we will just a quick overview in this chapter.
-
-Testcontainers can be used in JUnit4 tests by initializing Testcontainers objects as fields of the test class and by either annotating these fields with `@Rule` or `@ClassRule` JUnit4 annotation. `@Rule` means, the container will be restarted between each test method, `@ClassRule` will result in reusing the same container for all test methods of the test class. Testcontainers utilizes a fluent builder API for creating containers, this is an example:
+In JUnit4 tests, Testcontainers can be used by initializing _Testcontainers objects_ as fields of the test class and by either annotating these fields with `@Rule` or `@ClassRule` JUnit4 annotation. `@Rule` means, the container will be restarted between each test method, `@ClassRule` will result in reusing the same container for all test methods of the test class. Testcontainers utilizes a fluent builder API for creating containers.
+Here are two examples:
 
 [source, java]
 ----
 // Set up a redis container
-@ClassRule
-public static GenericContainer redis =
+// @Rule restarts containers between test methods
+@Rule
+public GenericContainer redis =
     new GenericContainer("redis:3.0.2")
                .withExposedPorts(6379);
 
 
-// Set up a plain OS container and customize environment, 
+// Set up a plain OS container and customize environment,
 // command and exposed ports. This just listens on port 80 
 // and always returns '42'
+// @ClassRule starts container once before all test methods
 @ClassRule
 public static GenericContainer alpine =
     new GenericContainer("alpine:3.2")
@@ -85,10 +101,6 @@ public static GenericContainer alpine =
                .withCommand("/bin/sh", "-c", 
                "while true; do echo \"$MAGIC_NUMBER\" | nc -l -p 80; done");
 ----
-
-`GenericContainer` is a special Testcontainers class and can be used for every Docker image, for which no specialized Testcontainers implementation exists. Existing specialized container classes are i.e. `PostgreSQLContainer`, `MySQLContainer` or `BrowserWebDriverContainer`. These specialized containers might provide additional API methods for more convenient usage inside tests, like `getJdbcUrl()` in case of database containers.
-
-== Integration testing using a real database
 
 A classic use case for integration testing is the persistence layer. An often found default approach is to use an embedded H2 in-memory database and run each test inside its own database transaction, which is rolled back after each test method.
 This might work for a lot use case, but sometimes it's beneficial to use a real database for the integration tests, which
@@ -101,123 +113,62 @@ TestContainers provides out of the box support for the following databases:
 * Oracle XE
 * Virtuoso
 
-We'll use PostgreSQL in the following example, so we need to include an additional dependency in our `build.gradle` file:
-
-[source, groovy]
+Specialized containers can simply be instantiated like this:
+[source, java]
 ----
-// https://mvnrepository.com/artifact/org.testcontainers/postgresql
-testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.6.0'
+@Rule
+public MySQLContainer mysql = new MySQLContainer();
 ----
-
-=== Configure SUT at runtime
 
 We want our tests to be as portable as possible and so one shouldn't make assumptions regarding the environment they are
 running in (like i.e. free ports). Luckily Testcontainers will already do all the heavy lifting for you and start
 the database on a free port (by leveraging the underlying container technology). By using methods like `postgreSQLContainer.getJdbcUrl()`
-it's possible to get the concrete values a runtime. Of course, production codes need to be written in such a way, that you can inject those values into the SUT at test runtime, i.e. specify such values in the constructor.
+it's possible to get the concrete values a runtime. Of course, production code needs to be written in such a way that you can inject those values into the SUT at test runtime, i.e. specify such values in the constructor.
 
-=== Exercise 1
+==== Goals
+* Take a good look at the examples and the online documentation for Testcontainers, especially the `PostgreSQLContainer` class.
+* Replace or extend the existing test. Make it use a real postgres database utilizing a `PostgreSQLContainer`.
+** Notice: This test has to *fail* - which is good! You successfully reproduced the customers' bug!
 
-Write integration tests for each method of `BookRepository` and implement `BookRepository` accordingly.
+=== Excercise 1.1: A small fix ===
+> Your new teammates are amazed by how quickly you found that bug - and by writing a portable test, too! 
+Your team's database expert takes a quick look and provides you with a fix for the `count` method of the `BookRepository`.
+Apparently, some debug code was left over there in `line 44` - you only need to *remove it*:
 
-[NOTE]
-====
-You might need additional runtime dependencies!
 
-For the production code, it's okay to go completely vanilla Java and use `DriverManager` and https://docs.oracle.com/javase/tutorial/jdbc/basics/connecting.html[`Connection`]. You can use `DriverManager.getConnection(jdbcUrl, username, password)` and `c.createStatement()`.
-
-Also remember to initialize the database schema before the test. Future versions of Testcontainers will provide special API methods for helping with this (see https://github.com/testcontainers/testcontainers-java/pull/575[PR]), but for now you have to do it manually or use https://flywaydb.org/[Flyway] if you want to.
-====
-
-=== TestContainers JDBC-URL
-
-As long as you have Testcontainers and the appropriate JDBC driver on your classpath, you can simply modify regular JDBC
-connection URLs to get a fresh containerized instance of the database each time your application starts up (meaning
-on initialization of the JDBC connection pool). This can be used as an alternative to the way we've seen in the last exercise.
-
-[CAUTION]
-=====
-Attention when using Spring-Boot (or Grails for that matter). In this case, you have to specify the following JDBC driver:
-
-`spring.datasource.driver-class-name=org.testcontainers.jdbc.ContainerDatabaseDriver`
-
-which would translate to something like this for Grails:
-
+[source, java]
 ----
-dataSource:
-  dbCreate: create
-  url: jdbc:tc:postgresql://hostname/databasename
-  driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
+c.createStatement().execute("SET @foobar = 4");
 ----
 
-=====
+==== Goals
+* Apply the fix.
+* Run the tests again.
+* Once the tests are green, reflect a moment on how quick you were in doing so.
 
-==== MySQL
+=== Excercise 2: Use Spock
 
-----
-jdbc:tc:mysql://somehostname:someport/databasename
-----
+> You just came back from a really good Groovy conference where you learned about http://spockframework.org/[Spock]. You immediately want to convert your entire test suite.
 
-----
-jdbc:tc:mysql:5.6.23://somehostname:someport/databasename
-----
+==== Goals
+* Convert your test suite to Spock.
+* Run your Spock tests and make sure they are green!
 
-==== PostgreSQL
+=== Excercise 2.1: Use the Spock-Extension for Testcontainers
 
-----
-jdbc:tc:postgresql://hostname/databasename
-----
+> You probably feel already much more at ease using Spock, but somehow, the Testcontainer stuff does not seem to fit the newfound elegance now.
+Luckily, there is the https://github.com/testcontainers/testcontainers-spock[Testcontainers Spock extension] to make things even easier.
 
-=== Exercise 2
-
-Duplicate the test class you've written in the last exercise and use the special Testcontainers JDBC-URL this time. 
-The JDBC-URL approach already supports using a database https://www.testcontainers.org/usage/database_containers.html#using-an-init-script[init script].
-
-== Excursus: Groovy & Spock
-
-In exercise 1 and 2 we used JUnit to write the test that describe our systems behaviour. 
-As the workshop's name might have suggested, we now want to use http://groovy-lang.org/[Groovy] and it's most formidable testing framework http://spockframework.org/[Spock] to do that in a much more expressive and readable way.
-We then add in the https://github.com/testcontainers/testcontainers-spock[Testcontainers Spock extension] to make things even easier.
-
-For Groovy and Spock, it suffices to pull in the dependency on Spock - Groovy will be pulled in transitively:
-
-[source, groovy]
-----
-testCompile group: 'org.spockframework', name: 'spock-core', version: '1.1-groovy-2.4'
-----
-
-[NOTE]
-=====
-As an aside: Groovy is nothing new to any of you by now - in fact, the entire `build.gradle` file is valid Groovy!
-=====
-
-For the Spock extension for Testcontainers, grab the release off the jitpack repository:
-[source, groovy]
-----
-repositories {
-    mavenCentral()
-    maven { url 'https://jitpack.io' }
-}
-
-dependencies {
-    testCompile 'com.github.testcontainers:testcontainers-spock:1.0.0-tc1.6.0'
-}
-----
-
-To give you a boost, all necessary dependencies are already declared in your `build.gradle`. 
-
-=== Exercise 2.5
-You can get your feet wet by porting your test from exercise 2 to Groovy and Spock. 
-Take a look at the http://spockframework.org/spock/docs/1.1/spock_primer.html[Spock primer] to get the Specification skeleton right!
-
-Note that we don't need to add the `@ClassRule` annotation to our containers anymore. The `testcontainers-spock` extension does a great job taking this off our hands, just make sure your Specification is annotated `@Testcontainers`. 
-The optional `static` modifier is replaced by annotating `@Shared`, making our container persistent across all test methods:
+With that, we don't need to add the `@Rule` or `@ClassRule` annotations to our containers anymore. The `testcontainers-spock` extension does a great job taking this off our hands, just make sure your Specification is annotated `@Testcontainers`. 
+For recreating the behaviour of `@ClassRule` annotated contains, the `static` modifier is dropped and the annotation replaced with `@Shared`. 
+This again makes our container persistent across all test methods:
 [source, groovy]
 ----
 @Testcontainers
 class RedisTest extends Specification {
 
     @Shared
+    // @Shared starts container once before all test methods
     public GenericContainer redis =
         new GenericContainer("redis:3.0.2")
                 .withExposedPorts(6379);
@@ -226,10 +177,27 @@ class RedisTest extends Specification {
 }
 ----
 
-Once your rewritten tests are working and lighting up green in your IDE, take a look at Spock's http://spockframework.org/spock/docs/1.1/data_driven_testing.html[Data Driven Testing] feature. 
-Choose a test of your suite and extend it by using the `where:` block!
+==== Goals
+* Enhance your testing suite further by using the features from the `testcontainers-spock` extension.
+* Run your tests and make sure they are green!
 
-== Interact with an external HTTP-Server
+
+=== Excercise 3: Spawn the Database using the JDBC-URL
+> Someone in your team really misses the short and concise way they could connect to the H2 test database. Now is you chance to brighten their day!
+
+As long as you have Testcontainers and the appropriate JDBC driver on your classpath, you can simply modify regular JDBC
+connection URLs to get a fresh containerized instance of the database each time your application starts up (meaning
+on initialization of the JDBC connection pool). This can be used as an alternative to the way we've seen in the last exercise.
+
+----
+jdbc:tc:postgresql://hostname/databasename
+----
+
+==== Goals
+* Try out this implicit way of spawning containers.
+* Run your new tests and make sure they are green!
+
+=== Excercise 4: Interact with an external HTTP-Server
 
 Now we want to think about testing the integration with a real external application. This could be anything
 which we'd be able to run inside a container, but in order to keep things simple, we have a very basic example:
@@ -237,26 +205,26 @@ Downloading a file from an HTTP-Server.
 
 Let's start with a service class skeleton, which looks like this:
 
-[source, java]
+[source, groovy]
 ----
-public class HttpDownloaderService {
+class HttpDownloaderService {
 
-    private String serverIp;
+    private String serverIp
 
-    private String serverPort;
+    private String serverPort
 
-    public HttpDownloaderService(String serverIp, String serverPort) {
+    HttpDownloaderService(String serverIp, String serverPort) {
         // ...
     }
 
-    public String downloadFile(String path) {
+    String downloadFile(String path) {
         // ...
     }
 }
 ----
 
 
-=== Generic Container
+==== Generic Container
 
 For this integration test, we want to use an Apache web server. Fortunately, there is a ready to use Docker image: `httpd:alpine`
 
@@ -282,8 +250,7 @@ httpContainer.getContainerIpAddress();
 httpContainer.getMappedPort(80);
 ----
 
-=== Exercise 3
-
+==== Goals
 Write an integration test as well as the corresponding production code to make the test green. You might want to use
 the wonderful new https://github.com/http-builder-ng/http-builder-ng[HttpBuilder-NG] for the implementation code:
 
@@ -294,16 +261,17 @@ compile 'io.github.http-builder-ng:http-builder-ng-core:0.16.1'
 
 (As an alternative solution, you can also check out the Groovy enhanced http://mrhaki.blogspot.de/2009/10/groovy-goodness-reading-url-content.html[URL class].)
 
-== Functional testing using Geb and Selenium
 
-I've prepared an example, we might want to look into:
+=== Excercise 5: Demo Functional Testing using Geb and Selenium
+
+We've prepared an example we might want to look into:
 
 [source, bash]
 ----
 git clone https://github.com/kiview/example-voting-app.git
 ----
 
-== Bonus: Testing your Docker containers with Testcontainers and Groovy scripts
+=== BONUS Excercise: Testing your Docker containers with Testcontainers and Groovy scripts
 
 Imagine we have a setup with a Nginx proxy redirecting to our service container (for the sake of simplicity we will simply use an Apache container for this example). The nginx config should go into a `default.conf` file and could look like this:
 
@@ -366,7 +334,6 @@ when()
 ----
 
 Of course setting up containers and the base url can be encapsulated in i.e. a `@BeforeClass` method, but for sake of simplicity, we can simply perform this stuff directly in a test method (annotated with `@Test`).
-
 
 == Acknowledgements
 
